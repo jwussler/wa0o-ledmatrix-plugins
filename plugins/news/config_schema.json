@@ -1,0 +1,356 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "News Ticker Plugin Configuration",
+  "description": "Configuration schema for the News Ticker plugin (Sports + General News)",
+  "type": "object",
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Enable or disable the news ticker plugin"
+    },
+    "global": {
+      "type": "object",
+      "properties": {
+        "display_duration": {
+          "type": "number",
+          "default": 30,
+          "minimum": 10,
+          "maximum": 300,
+          "description": "Duration in seconds to display the news ticker"
+        },
+        "update_interval": {
+          "type": "integer",
+          "default": 300,
+          "minimum": 60,
+          "maximum": 3600,
+          "description": "How often to fetch new headlines (seconds)"
+        },
+        "display": {
+          "type": "object",
+          "description": "Display and scrolling settings",
+          "properties": {
+            "scroll_speed": {
+              "type": "number",
+              "description": "Scrolling speed in pixels per frame",
+              "minimum": 0.5,
+              "maximum": 5.0,
+              "default": 1.0
+            },
+            "scroll_delay": {
+              "type": "number",
+              "description": "Delay between scroll steps in seconds",
+              "minimum": 0.001,
+              "maximum": 0.1,
+              "default": 0.01
+            }
+          },
+          "additionalProperties": false
+        },
+        "target_fps": {
+          "type": "integer",
+          "default": 100,
+          "minimum": 30,
+          "maximum": 200,
+          "description": "Target frames per second for scrolling"
+        },
+        "font_size": {
+          "type": "integer",
+          "default": 12,
+          "minimum": 8,
+          "maximum": 20,
+          "description": "Font size for headlines"
+        },
+        "font_path": {
+          "type": "string",
+          "default": "assets/fonts/PressStart2P-Regular.ttf",
+          "description": "Font path for headlines"
+        },
+        "dynamic_duration": {
+          "type": [
+            "boolean",
+            "object"
+          ],
+          "description": "Dynamic duration settings for synchronising display time with content width",
+          "default": {
+            "enabled": true,
+            "min_duration_seconds": 30,
+            "max_duration_seconds": 300,
+            "buffer_ratio": 0.1
+          },
+          "oneOf": [
+            {
+              "type": "boolean",
+              "description": "[Legacy] Enable/disable dynamic duration"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Enable dynamic duration based on content width"
+                },
+                "min_duration_seconds": {
+                  "type": "integer",
+                  "default": 30,
+                  "minimum": 10,
+                  "maximum": 300,
+                  "description": "Minimum display duration when dynamic duration is enabled"
+                },
+                "max_duration_seconds": {
+                  "type": "integer",
+                  "default": 300,
+                  "minimum": 30,
+                  "maximum": 600,
+                  "description": "Maximum display duration when dynamic duration is enabled"
+                },
+                "buffer_ratio": {
+                  "type": "number",
+                  "default": 0.1,
+                  "minimum": 0.01,
+                  "maximum": 1.0,
+                  "description": "Extra buffer applied to the calculated duration (percentage expressed as 0-1)"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        },
+        "rotation_enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable headline rotation after multiple cycles"
+        },
+        "rotation_threshold": {
+          "type": "integer",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Number of cycles before rotating headlines"
+        },
+        "headlines_per_feed": {
+          "type": "integer",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Number of headlines to fetch per feed"
+        },
+        "background_service": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable background data fetching"
+            },
+            "request_timeout": {
+              "type": "integer",
+              "default": 30,
+              "minimum": 10,
+              "maximum": 120,
+              "description": "Request timeout in seconds"
+            },
+            "max_retries": {
+              "type": "integer",
+              "default": 3,
+              "minimum": 1,
+              "maximum": 10,
+              "description": "Maximum number of retries for failed requests"
+            },
+            "priority": {
+              "type": "integer",
+              "default": 2,
+              "minimum": 1,
+              "maximum": 5,
+              "description": "Priority for background requests (1=highest, 5=lowest)"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "feeds": {
+      "type": "object",
+      "properties": {
+        "enabled_feeds": {
+          "type": "array",
+          "x-widget": "checkbox-group",
+          "x-options": {
+            "labels": {
+              "MLB": "MLB",
+              "NFL": "NFL",
+              "NCAA FB": "NCAA Football",
+              "NHL": "NHL",
+              "NBA": "NBA",
+              "TOP SPORTS": "Top Sports",
+              "BIG10": "Big Ten",
+              "NCAA": "NCAA",
+              "Other": "Other Sports",
+              "CNN": "CNN - Top Stories",
+              "BBC": "BBC News - World",
+              "NPR": "NPR - Top Stories",
+              "FOX NEWS": "Fox News - Latest",
+              "ABC NEWS": "ABC News - Top Stories",
+              "CBS NEWS": "CBS News - Latest",
+              "AP NEWS": "AP News - Top Stories",
+              "REUTERS": "Reuters - Top News",
+              "TECH": "Tech (Ars Technica)",
+              "SCIENCE": "Science (NYT)"
+            }
+          },
+          "items": {
+            "type": "string",
+            "enum": [
+              "MLB",
+              "NFL",
+              "NCAA FB",
+              "NHL",
+              "NBA",
+              "TOP SPORTS",
+              "BIG10",
+              "NCAA",
+              "Other",
+              "CNN",
+              "BBC",
+              "NPR",
+              "FOX NEWS",
+              "ABC NEWS",
+              "CBS NEWS",
+              "AP NEWS",
+              "REUTERS",
+              "TECH",
+              "SCIENCE"
+            ],
+            "description": "Predefined RSS feed categories (sports, news, tech, science)"
+          },
+          "uniqueItems": true,
+          "minItems": 0,
+          "maxItems": 19,
+          "default": [],
+          "description": "Select which predefined RSS feeds to enable. Includes sports (ESPN), general news (CNN, BBC, NPR, etc.), and tech/science feeds. All disabled by default."
+        },
+        "custom_feeds": {
+          "type": "array",
+          "description": "Custom RSS feeds with optional logos. Upload logos via the file upload widget.",
+          "minItems": 0,
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 100,
+                "pattern": "^[^\\s](.*[^\\s])?$",
+                "description": "Feed name (1-100 characters, cannot start or end with whitespace)"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "minLength": 1,
+                "maxLength": 2048,
+                "description": "RSS feed URL (must be a valid URI)"
+              },
+              "enabled": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether this feed is enabled"
+              },
+              "logo": {
+                "type": "object",
+                "x-widget": "file-upload",
+                "x-upload-config": {
+                  "endpoint": "/api/v3/plugins/assets/upload",
+                  "plugin_id": "news",
+                  "max_files": 1,
+                  "allowed_types": [
+                    "image/png",
+                    "image/jpeg",
+                    "image/bmp"
+                  ],
+                  "max_size_mb": 2
+                },
+                "description": "Optional logo for this feed. Upload via the file upload widget.",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Unique identifier for this logo"
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "File path relative to project root"
+                  },
+                  "uploaded_at": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Upload timestamp"
+                  }
+                },
+                "required": [
+                  "id",
+                  "path"
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "text_color": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "default": [
+            255,
+            255,
+            255
+          ],
+          "description": "RGB color for headline text"
+        },
+        "separator_color": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "default": [
+            255,
+            0,
+            0
+          ],
+          "description": "RGB color for separators between headlines"
+        },
+        "show_logos": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display news source logos next to headlines"
+        },
+        "logo_size": {
+          "type": "integer",
+          "default": 28,
+          "minimum": 8,
+          "maximum": 64,
+          "description": "Logo size in pixels (height). Defaults to display height minus 4 pixels for margin."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "enabled"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Weather Alerts Configuration",
+  "description": "NWS severe weather alert display with Vegas mode takeover",
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "description": "Enable or disable Weather Alerts",
+      "default": true
+    },
+    "latitude": {
+      "type": "number",
+      "title": "Latitude",
+      "description": "Your latitude for NWS alerts",
+      "default": 38.7881
+    },
+    "longitude": {
+      "type": "number",
+      "title": "Longitude",
+      "description": "Your longitude for NWS alerts",
+      "default": -90.4974
+    },
+    "check_interval": {
+      "type": "integer",
+      "title": "Check Interval (seconds)",
+      "description": "How often to check for new alerts",
+      "minimum": 60,
+      "maximum": 600,
+      "default": 120
+    },
+    "flood_cards": {
+      "type": "integer",
+      "title": "T1 Alert Cards Count",
+      "description": "Cards for life-threatening alerts (more = more display dominance)",
+      "minimum": 30,
+      "maximum": 300,
+      "default": 150
+    },
+    "alert_card_duration": {
+      "type": "integer",
+      "title": "Alert Card Duration (seconds)",
+      "description": "How long each alert card shows (shorter = faster cycling)",
+      "minimum": 2,
+      "maximum": 15,
+      "default": 4
+    },
+    "display_duration": {
+      "type": "integer",
+      "title": "Clear Card Duration (seconds)",
+      "description": "How long to show the 'no alerts' card when clear",
+      "minimum": 5,
+      "maximum": 30,
+      "default": 15
+    },
+    "show_when_clear": {
+      "type": "boolean",
+      "title": "Show When Clear",
+      "description": "Show a 'No Active Alerts' card even when there are no alerts",
+      "default": false
+    }
+  },
+  "additionalProperties": false
+}

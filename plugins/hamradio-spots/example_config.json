@@ -1,0 +1,14 @@
+{
+    "my_grid": "EM48",
+    "my_callsign": "",
+    "show_voice": true,
+    "show_cw": false,
+    "show_digital": false,
+    "priority_enabled": true,
+    "vegas_views": ["spots", "conditions", "hotspots", "map", "grayline", "continents", "bandopen", "rate", "clock", "distance", "stats"],
+    "refresh_interval": 900,
+    "show_flags": true,
+    "show_frequency": true,
+    "show_mode": true,
+    "show_age": true
+}

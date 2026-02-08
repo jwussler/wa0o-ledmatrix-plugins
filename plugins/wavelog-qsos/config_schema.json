@@ -1,0 +1,102 @@
+{
+  "type": "object",
+  "title": "Wavelog Recent QSOs",
+  "description": "Display your recent logged QSOs from Wavelog. Only shows contacts within the configured time window.",
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "title": "Enable Plugin",
+      "default": true
+    },
+    "wavelog_url": {
+      "type": "string",
+      "title": "Wavelog URL",
+      "description": "Base URL of your Wavelog instance (e.g., http://localhost/wavelog or https://log.example.com)",
+      "default": "http://localhost/wavelog"
+    },
+    "fetch_method": {
+      "type": "string",
+      "title": "Fetch Method",
+      "description": "How to retrieve QSOs. 'api' uses the REST API, 'mysql' queries the database directly.",
+      "enum": ["api", "mysql"],
+      "default": "api"
+    },
+    "api_key": {
+      "type": "string",
+      "title": "API Key",
+      "description": "Your Wavelog API key (read-only is fine). Must belong to the user who owns the station profile. Get from Wavelog > Account > API Keys.",
+      "default": ""
+    },
+    "station_id": {
+      "type": "integer",
+      "title": "Station ID",
+      "description": "Your Wavelog station profile/location ID.",
+      "default": 1,
+      "minimum": 1
+    },
+    "db_host": {
+      "type": "string",
+      "title": "Database Host",
+      "description": "MySQL host (only for mysql fetch method).",
+      "default": "localhost"
+    },
+    "db_name": {
+      "type": "string",
+      "title": "Database Name",
+      "description": "Wavelog database name.",
+      "default": "wavelog"
+    },
+    "db_user": {
+      "type": "string",
+      "title": "Database User",
+      "description": "MySQL username for Wavelog database.",
+      "default": "wavelog"
+    },
+    "db_pass": {
+      "type": "string",
+      "title": "Database Password",
+      "description": "MySQL password (only for mysql fetch method).",
+      "default": ""
+    },
+    "max_qsos": {
+      "type": "integer",
+      "title": "Max QSOs to Show",
+      "description": "Maximum number of recent QSOs to display.",
+      "default": 10,
+      "minimum": 1,
+      "maximum": 50
+    },
+    "max_age_minutes": {
+      "type": "integer",
+      "title": "Max Age (minutes)",
+      "description": "Only show QSOs newer than this many minutes. Set to 60 for 1 hour.",
+      "default": 60,
+      "minimum": 5,
+      "maximum": 1440
+    },
+    "fetch_interval": {
+      "type": "integer",
+      "title": "Refresh Interval (seconds)",
+      "description": "How often to check for new QSOs.",
+      "default": 120,
+      "minimum": 30,
+      "maximum": 600
+    },
+    "display_mode": {
+      "type": "string",
+      "title": "Display Mode",
+      "description": "'ticker' shows 3 QSOs in rows, 'cards' shows one QSO at a time with full details.",
+      "enum": ["ticker", "cards"],
+      "default": "ticker"
+    },
+    "display_duration": {
+      "type": "integer",
+      "title": "Display Duration (seconds)",
+      "description": "How long to show this plugin in Vegas mode rotation.",
+      "default": 20,
+      "minimum": 5,
+      "maximum": 120
+    }
+  },
+  "required": ["wavelog_url", "fetch_method", "max_age_minutes"]
+}

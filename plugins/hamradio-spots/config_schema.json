@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ham Radio DX Spots Configuration",
+  "type": "object",
+  "properties": {
+    "my_grid": {
+      "type": "string",
+      "title": "Your Grid Square",
+      "description": "Maidenhead grid (e.g., EM48)",
+      "default": "EM48"
+    },
+    "my_callsign": {
+      "type": "string",
+      "title": "Your Callsign",
+      "description": "Shown on dashboard and clock",
+      "default": ""
+    },
+    "show_voice": {
+      "type": "boolean",
+      "title": "Show SSB Spots",
+      "default": true
+    },
+    "show_cw": {
+      "type": "boolean",
+      "title": "Show CW Spots",
+      "default": false
+    },
+    "show_digital": {
+      "type": "boolean",
+      "title": "Show Digital Spots",
+      "default": false
+    },
+    "priority_enabled": {
+      "type": "boolean",
+      "title": "Top 50 Jackpot Alerts",
+      "description": "MEGA alerts for Top 10, tiered for Top 25/50",
+      "default": true
+    },
+    "vegas_views": {
+      "type": "array",
+      "title": "Display Views",
+      "items": {
+        "type": "string",
+        "enum": [
+          "dashboard",
+          "spots",
+          "conditions",
+          "hotspots",
+          "map",
+          "grayline",
+          "clock",
+          "bestband",
+          "pota",
+          "spacewx",
+          "stats",
+          "continents",
+          "bandopen",
+          "rate",
+          "distance",
+          "longpath",
+          "beacon",
+          "contest",
+          "muf"
+        ]
+      },
+      "default": [
+        "dashboard",
+        "spots",
+        "conditions",
+        "hotspots",
+        "clock",
+        "bestband"
+      ],
+      "x-widget": "checkbox-group",
+      "x-options": {
+        "labels": {
+          "dashboard": "\u2605 Dashboard (All-in-one)",
+          "spots": "DX Spots",
+          "conditions": "Solar Gauges",
+          "hotspots": "Hot Bands + Trends",
+          "map": "World Map",
+          "grayline": "Gray Line",
+          "clock": "UTC/Local Clock",
+          "bestband": "Best Band Now",
+          "pota": "POTA/SOTA",
+          "spacewx": "Space Weather",
+          "stats": "Stats + Sparkline",
+          "continents": "Continents",
+          "bandopen": "Band Opening",
+          "rate": "Spot Rate",
+          "distance": "Distance to DX",
+          "longpath": "Long Path",
+          "beacon": "NCDXF Beacons",
+          "contest": "Contests",
+          "muf": "MUF Prediction"
+        }
+      }
+    },
+    "refresh_interval": {
+      "type": "integer",
+      "title": "Refresh (seconds)",
+      "minimum": 60,
+      "maximum": 3600,
+      "default": 900
+    },
+    "show_flags": {
+      "type": "boolean",
+      "title": "Country Flags",
+      "default": true
+    },
+    "show_frequency": {
+      "type": "boolean",
+      "title": "Frequency",
+      "default": true
+    },
+    "show_age": {
+      "type": "boolean",
+      "title": "Spot Age",
+      "default": true
+    },
+    "priority_display_duration": {
+      "type": "integer",
+      "title": "Priority Display Duration (seconds)",
+      "description": "How long to hold the display when a Club Log Top 50 Most Wanted spot is detected. Longer = more time to read the callsign, frequency, and act on it.",
+      "default": 15,
+      "minimum": 5,
+      "maximum": 60
+    }
+  }
+}

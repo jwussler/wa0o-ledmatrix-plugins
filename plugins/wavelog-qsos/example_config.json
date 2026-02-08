@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "wavelog_url": "https://your-wavelog-instance.com/index.php",
+  "fetch_method": "api",
+  "api_key": "YOUR_WAVELOG_API_KEY",
+  "station_id": 1,
+  "db_host": "localhost",
+  "db_name": "wavelog",
+  "db_user": "wavelog",
+  "db_pass": "YOUR_DB_PASSWORD",
+  "max_qsos": 10,
+  "max_age_minutes": 60,
+  "fetch_interval": 120,
+  "display_mode": "ticker",
+  "display_duration": 20
+}

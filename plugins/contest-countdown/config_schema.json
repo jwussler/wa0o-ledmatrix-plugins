@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Contest Countdown Configuration",
+    "type": "object",
+    "properties": {
+        "countdown_days": {
+            "type": "integer",
+            "title": "Countdown Window (days)",
+            "description": "Show countdown when contest is within this many days",
+            "default": 7,
+            "minimum": 1,
+            "maximum": 30
+        },
+        "show_always": {
+            "type": "boolean",
+            "title": "Always Show Next Contest",
+            "description": "Show next contest card even outside countdown window",
+            "default": true
+        },
+        "show_eu": {
+            "type": "boolean",
+            "title": "Show EU Contests",
+            "description": "Include European contests in the display",
+            "default": true
+        },
+        "display_duration": {
+            "type": "integer",
+            "title": "Display Duration (seconds)",
+            "description": "How long to show in Vegas mode",
+            "default": 8,
+            "minimum": 3,
+            "maximum": 30
+        }
+    }
+}

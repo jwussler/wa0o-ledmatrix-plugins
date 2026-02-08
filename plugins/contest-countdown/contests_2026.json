@@ -1,0 +1,76 @@
+{
+    "_comment": "2026 Major Ham Radio Contest Calendar — ARRL + CQ + NCJ + EU. Edit this file to add/remove contests.",
+    "_updated": "2026-02-07",
+    "contests": [
+        {"name": "ARRL Straight Key Night",     "short": "SKN",          "start": "2026-01-01T00:00Z", "end": "2026-01-01T23:59Z", "mode": "CW",    "sponsor": "ARRL"},
+        {"name": "ARRL Kids Day",               "short": "KIDS DAY",     "start": "2026-01-03T18:00Z", "end": "2026-01-03T23:59Z", "mode": "SSB",   "sponsor": "ARRL"},
+        {"name": "ARRL RTTY Roundup",           "short": "ARRL RTTY",    "start": "2026-01-03T18:00Z", "end": "2026-01-04T23:59Z", "mode": "RTTY",  "sponsor": "ARRL"},
+        {"name": "NAQP CW",                     "short": "NAQP CW",      "start": "2026-01-10T18:00Z", "end": "2026-01-11T05:59Z", "mode": "CW",    "sponsor": "NCJ"},
+        {"name": "ARRL January VHF",            "short": "JAN VHF",      "start": "2026-01-17T19:00Z", "end": "2026-01-19T03:59Z", "mode": "ALL",   "sponsor": "ARRL"},
+        {"name": "NAQP SSB",                    "short": "NAQP SSB",     "start": "2026-01-17T18:00Z", "end": "2026-01-18T05:59Z", "mode": "SSB",   "sponsor": "NCJ"},
+        {"name": "CQ 160-Meter CW",             "short": "CQ 160 CW",   "start": "2026-01-23T22:00Z", "end": "2026-01-25T22:00Z", "mode": "CW",    "sponsor": "CQ"},
+        {"name": "REF Contest CW",              "short": "REF CW",       "start": "2026-01-24T06:00Z", "end": "2026-01-25T18:00Z", "mode": "CW",    "sponsor": "EU"},
+        {"name": "Winter Field Day",            "short": "WINTER FD",    "start": "2026-01-24T16:00Z", "end": "2026-01-25T21:59Z", "mode": "ALL",   "sponsor": "OTHER"},
+        {"name": "UBA DX Contest SSB",          "short": "UBA SSB",      "start": "2026-01-31T13:00Z", "end": "2026-02-01T13:00Z", "mode": "SSB",   "sponsor": "EU"},
+
+        {"name": "ARRL School Club Roundup",    "short": "SCR",          "start": "2026-02-09T13:00Z", "end": "2026-02-13T23:59Z", "mode": "ALL",   "sponsor": "ARRL"},
+        {"name": "CQ WPX RTTY",                 "short": "WPX RTTY",     "start": "2026-02-14T00:00Z", "end": "2026-02-15T23:59Z", "mode": "RTTY",  "sponsor": "CQ"},
+        {"name": "Dutch PACC Contest",          "short": "PACC",         "start": "2026-02-14T12:00Z", "end": "2026-02-15T12:00Z", "mode": "ALL",   "sponsor": "EU"},
+        {"name": "ARRL DX CW",                  "short": "ARRL DX CW",  "start": "2026-02-21T00:00Z", "end": "2026-02-22T23:59Z", "mode": "CW",    "sponsor": "ARRL"},
+        {"name": "REF Contest SSB",             "short": "REF SSB",      "start": "2026-02-21T06:00Z", "end": "2026-02-22T18:00Z", "mode": "SSB",   "sponsor": "EU"},
+        {"name": "CQ 160-Meter SSB",            "short": "CQ 160 SSB",  "start": "2026-02-27T22:00Z", "end": "2026-03-01T22:00Z", "mode": "SSB",   "sponsor": "CQ"},
+        {"name": "UBA DX Contest CW",           "short": "UBA CW",      "start": "2026-02-28T13:00Z", "end": "2026-03-01T13:00Z", "mode": "CW",    "sponsor": "EU"},
+        {"name": "NAQP RTTY",                   "short": "NAQP RTTY",    "start": "2026-02-28T18:00Z", "end": "2026-03-01T05:59Z", "mode": "RTTY",  "sponsor": "NCJ"},
+
+        {"name": "ARRL DX SSB",                 "short": "ARRL DX SSB", "start": "2026-03-07T00:00Z", "end": "2026-03-08T23:59Z", "mode": "SSB",   "sponsor": "ARRL"},
+        {"name": "Commonwealth Contest",        "short": "BERU",         "start": "2026-03-14T10:00Z", "end": "2026-03-15T10:00Z", "mode": "CW",    "sponsor": "EU"},
+        {"name": "Russian DX Contest",          "short": "RDXC",         "start": "2026-03-21T12:00Z", "end": "2026-03-22T12:00Z", "mode": "ALL",   "sponsor": "EU"},
+        {"name": "CQ WPX SSB",                  "short": "WPX SSB",      "start": "2026-03-28T00:00Z", "end": "2026-03-29T23:59Z", "mode": "SSB",   "sponsor": "CQ"},
+
+        {"name": "SP DX Contest",               "short": "SP DX",        "start": "2026-04-04T15:00Z", "end": "2026-04-05T15:00Z", "mode": "ALL",   "sponsor": "EU"},
+        {"name": "ARRL Rookie Roundup SSB",     "short": "RR SSB",       "start": "2026-04-19T18:00Z", "end": "2026-04-19T23:59Z", "mode": "SSB",   "sponsor": "ARRL"},
+        {"name": "Helvetia Contest",            "short": "HELVETIA",     "start": "2026-04-25T13:00Z", "end": "2026-04-26T12:59Z", "mode": "ALL",   "sponsor": "EU"},
+
+        {"name": "ARI Intl DX Contest",         "short": "ARI DX",       "start": "2026-05-02T12:00Z", "end": "2026-05-03T11:59Z", "mode": "ALL",   "sponsor": "EU"},
+        {"name": "Hamvention",                  "short": "HAMVENTION",   "start": "2026-05-15T13:00Z", "end": "2026-05-17T17:00Z", "mode": "EVENT", "sponsor": "EVENT"},
+        {"name": "King of Spain CW",            "short": "EA CW",        "start": "2026-05-16T12:00Z", "end": "2026-05-17T12:00Z", "mode": "CW",    "sponsor": "EU"},
+        {"name": "CQ WPX CW",                   "short": "WPX CW",       "start": "2026-05-30T00:00Z", "end": "2026-05-31T23:59Z", "mode": "CW",    "sponsor": "CQ"},
+
+        {"name": "ARRL Intl Digital Contest",   "short": "ARRL DIGI",    "start": "2026-06-06T18:00Z", "end": "2026-06-07T23:59Z", "mode": "DIGI",  "sponsor": "ARRL"},
+        {"name": "ARRL June VHF",               "short": "JUN VHF",      "start": "2026-06-13T18:00Z", "end": "2026-06-15T02:59Z", "mode": "ALL",   "sponsor": "ARRL"},
+        {"name": "All Asian DX CW",             "short": "AA DX CW",     "start": "2026-06-20T00:00Z", "end": "2026-06-21T23:59Z", "mode": "CW",    "sponsor": "EU"},
+        {"name": "King of Spain SSB",           "short": "EA SSB",        "start": "2026-06-27T12:00Z", "end": "2026-06-28T12:00Z", "mode": "SSB",   "sponsor": "EU"},
+        {"name": "ARRL Field Day",              "short": "FIELD DAY",    "start": "2026-06-27T18:00Z", "end": "2026-06-28T20:59Z", "mode": "ALL",   "sponsor": "ARRL"},
+
+        {"name": "CQ WW VHF",                   "short": "CQ VHF",       "start": "2026-07-04T18:00Z", "end": "2026-07-05T20:59Z", "mode": "ALL",   "sponsor": "CQ"},
+        {"name": "IARU HF Championship",        "short": "IARU HF",      "start": "2026-07-11T12:00Z", "end": "2026-07-12T11:59Z", "mode": "ALL",   "sponsor": "ARRL"},
+        {"name": "NAQP RTTY (Jul)",             "short": "NAQP RTTY",    "start": "2026-07-18T18:00Z", "end": "2026-07-19T05:59Z", "mode": "RTTY",  "sponsor": "NCJ"},
+        {"name": "RSGB IOTA Contest",           "short": "IOTA",          "start": "2026-07-25T12:00Z", "end": "2026-07-26T12:00Z", "mode": "ALL",   "sponsor": "EU"},
+
+        {"name": "ARRL 222 MHz and Up",         "short": "222 & UP",     "start": "2026-08-01T18:00Z", "end": "2026-08-02T18:00Z", "mode": "ALL",   "sponsor": "ARRL"},
+        {"name": "European HF Championship",    "short": "EU HF",        "start": "2026-08-01T12:00Z", "end": "2026-08-01T23:59Z", "mode": "ALL",   "sponsor": "EU"},
+        {"name": "NAQP CW (Aug)",               "short": "NAQP CW",      "start": "2026-08-01T18:00Z", "end": "2026-08-02T05:59Z", "mode": "CW",    "sponsor": "NCJ"},
+        {"name": "WAE DX CW",                   "short": "WAE CW",       "start": "2026-08-08T00:00Z", "end": "2026-08-09T23:59Z", "mode": "CW",    "sponsor": "EU"},
+        {"name": "ARRL 10 GHz and Up",          "short": "10 GHz",       "start": "2026-08-15T06:00Z", "end": "2026-08-17T23:59Z", "mode": "ALL",   "sponsor": "ARRL"},
+        {"name": "NAQP SSB (Aug)",              "short": "NAQP SSB",     "start": "2026-08-15T18:00Z", "end": "2026-08-16T05:59Z", "mode": "SSB",   "sponsor": "NCJ"},
+        {"name": "ARRL Rookie Roundup RTTY",    "short": "RR RTTY",      "start": "2026-08-16T18:00Z", "end": "2026-08-16T23:59Z", "mode": "RTTY",  "sponsor": "ARRL"},
+
+        {"name": "WAE DX SSB",                  "short": "WAE SSB",      "start": "2026-09-12T00:00Z", "end": "2026-09-13T23:59Z", "mode": "SSB",   "sponsor": "EU"},
+        {"name": "ARRL September VHF",          "short": "SEP VHF",      "start": "2026-09-12T18:00Z", "end": "2026-09-14T02:59Z", "mode": "ALL",   "sponsor": "ARRL"},
+        {"name": "SAC CW",                      "short": "SAC CW",       "start": "2026-09-19T12:00Z", "end": "2026-09-20T11:59Z", "mode": "CW",    "sponsor": "EU"},
+        {"name": "CQ WW RTTY",                  "short": "WW RTTY",      "start": "2026-09-26T00:00Z", "end": "2026-09-27T23:59Z", "mode": "RTTY",  "sponsor": "CQ"},
+
+        {"name": "SAC SSB",                     "short": "SAC SSB",      "start": "2026-10-10T12:00Z", "end": "2026-10-11T11:59Z", "mode": "SSB",   "sponsor": "EU"},
+        {"name": "ARRL School Club Roundup",    "short": "SCR",          "start": "2026-10-19T13:00Z", "end": "2026-10-23T23:59Z", "mode": "ALL",   "sponsor": "ARRL"},
+        {"name": "CQ WW SSB",                   "short": "CQ WW SSB",   "start": "2026-10-24T00:00Z", "end": "2026-10-25T23:59Z", "mode": "SSB",   "sponsor": "CQ"},
+
+        {"name": "ARRL Sweepstakes CW",         "short": "SS CW",        "start": "2026-11-07T21:00Z", "end": "2026-11-09T02:59Z", "mode": "CW",    "sponsor": "ARRL"},
+        {"name": "WAE DX RTTY",                 "short": "WAE RTTY",     "start": "2026-11-14T00:00Z", "end": "2026-11-15T23:59Z", "mode": "RTTY",  "sponsor": "EU"},
+        {"name": "ARRL Sweepstakes SSB",        "short": "SS SSB",       "start": "2026-11-21T21:00Z", "end": "2026-11-23T02:59Z", "mode": "SSB",   "sponsor": "ARRL"},
+        {"name": "CQ WW CW",                    "short": "CQ WW CW",    "start": "2026-11-28T00:00Z", "end": "2026-11-29T23:59Z", "mode": "CW",    "sponsor": "CQ"},
+
+        {"name": "ARRL 160 Meter",              "short": "ARRL 160M",    "start": "2026-12-04T22:00Z", "end": "2026-12-06T16:00Z", "mode": "CW",    "sponsor": "ARRL"},
+        {"name": "ARRL 10 Meter",               "short": "ARRL 10M",     "start": "2026-12-12T00:00Z", "end": "2026-12-13T23:59Z", "mode": "ALL",   "sponsor": "ARRL"},
+        {"name": "ARRL Rookie Roundup CW",      "short": "RR CW",        "start": "2026-12-20T18:00Z", "end": "2026-12-20T23:59Z", "mode": "CW",    "sponsor": "ARRL"}
+    ]
+}

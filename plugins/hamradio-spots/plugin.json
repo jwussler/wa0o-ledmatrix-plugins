@@ -1,0 +1,12 @@
+{
+    "id": "hamradio-spots",
+    "name": "Ham Radio DX Spots",
+    "version": "2.7.0",
+    "description": "DX spots with configurable voice/CW/digital, propagation, and band filters",
+    "author": "WA0O",
+    "entry_point": "manager.py",
+    "main_class": "HamRadioSpotsPlugin",
+    "config_schema": "config.schema.json",
+    "category": "ham-radio",
+    "tags": ["ham radio", "dx", "spots", "amateur radio", "propagation"]
+}

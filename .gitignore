@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.bak
+*.bak.*
+config.json
+.dependencies_installed
+docker-compose.yaml
