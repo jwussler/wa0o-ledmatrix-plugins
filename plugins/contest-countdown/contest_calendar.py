@@ -1,9 +1,9 @@
 """
 Perpetual Ham Radio Contest Calendar Generator
 Calculates dates for major ham radio contests for any year.
+Covers NA, EU, Asian, and Oceania contests.
 """
 from datetime import datetime, timedelta
-from typing import List, Dict, Any
 
 def _nth_weekday(year, month, weekday, n):
     if n > 0:
@@ -41,97 +41,133 @@ def generate_contest_calendar(year):
             "end":end.strftime("%Y-%m-%dT%H:%M:%SZ"),"mode":mode,"bands":bands,
             "sponsor":sponsor,"description":description})
 
-    # JANUARY
+    # ── JANUARY ──────────────────────────────────────────────
     sat,sun = _full_weekend(year,1,1)
     add("ARRL RTTY Roundup",sat.replace(hour=18),sun.replace(hour=23,minute=59),mode="RTTY/Digital",sponsor="ARRL",description="Work everyone on RTTY and digital modes")
+    add("EU HF Championship",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="Mixed",sponsor="SCC",description="European HF Championship")
     sat = _nth_weekday(year,1,5,2)
     add("North American QSO Party CW",sat.replace(hour=18),(sat+timedelta(days=1)).replace(hour=5,minute=59),mode="CW",sponsor="NCJ",description="Low power, NA stations work everyone")
     sat = _nth_weekday(year,1,5,3)
     add("North American QSO Party SSB",sat.replace(hour=18),(sat+timedelta(days=1)).replace(hour=5,minute=59),mode="SSB",sponsor="NCJ",description="Low power, NA stations work everyone")
     sat,sun = _full_weekend(year,1,-1)
     add("CQ 160-Meter Contest CW",(sat-timedelta(days=1)).replace(hour=22),sun.replace(hour=22),mode="CW",bands="160m",sponsor="CQ Magazine",description="CW on 160 meters")
-    sat,sun = _full_weekend(year,1,-1)
-    add("Winter Field Day",sat.replace(hour=16),sun.replace(hour=21,minute=59),mode="Mixed",sponsor="WFD",description="Portable/emergency operations in winter conditions")
+    add("Winter Field Day",sat.replace(hour=16),sun.replace(hour=21,minute=59),mode="Mixed",sponsor="WFD",description="Portable/emergency operations in winter")
 
-    # FEBRUARY
+    # ── FEBRUARY ─────────────────────────────────────────────
     sat,sun = _full_weekend(year,2,2)
     add("CQ WW RTTY WPX Contest",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="RTTY",sponsor="CQ Magazine",description="Work prefixes on RTTY")
+    add("Dutch PACC Contest",sat.replace(hour=12),sun.replace(hour=12),mode="Mixed",sponsor="VERON",description="Work Dutch stations")
     sat,sun = _full_weekend(year,2,3)
     add("ARRL International DX Contest CW",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="CW",sponsor="ARRL",description="W/VE work DX, DX works W/VE")
     sat,sun = _full_weekend(year,2,-1)
     add("CQ 160-Meter Contest SSB",(sat-timedelta(days=1)).replace(hour=22),sun.replace(hour=22),mode="SSB",bands="160m",sponsor="CQ Magazine",description="SSB on 160 meters")
-    sat,sun = _full_weekend(year,2,-1)
-    add("North American QSO Party RTTY",sat.replace(hour=18),sun.replace(hour=5,minute=59),mode="RTTY",sponsor="NCJ",description="Low power, NA stations work everyone on RTTY")
+    add("North American QSO Party RTTY",sat.replace(hour=18),sun.replace(hour=5,minute=59),mode="RTTY",sponsor="NCJ",description="Low power NA RTTY")
 
-    # MARCH
+    # ── MARCH ────────────────────────────────────────────────
     sat,sun = _full_weekend(year,3,1)
     add("ARRL International DX Contest SSB",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="SSB",sponsor="ARRL",description="W/VE work DX, DX works W/VE")
+    sat,sun = _full_weekend(year,3,3)
+    add("Russian DX Contest",sat.replace(hour=12),sun.replace(hour=12),mode="Mixed",sponsor="SRR",description="Work Russian stations and oblasts")
     sat,sun = _full_weekend(year,3,-1)
     add("CQ WW WPX Contest SSB",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="SSB",sponsor="CQ Magazine",description="Work prefixes worldwide")
 
-    # APRIL
+    # ── APRIL ────────────────────────────────────────────────
+    sat,sun = _full_weekend(year,4,1)
+    add("SP DX Contest",sat.replace(hour=15),sun.replace(hour=15),mode="Mixed",sponsor="PZK",description="Work Polish stations")
+    sat,sun = _full_weekend(year,4,2)
+    add("JIDX CW Contest",sat.replace(hour=7),(sat+timedelta(days=1)).replace(hour=13),mode="CW",sponsor="JARL",description="Work JA stations on CW")
     sun = _nth_weekday(year,4,6,3)
     add("ARRL Rookie Roundup SSB",sun.replace(hour=18),sun.replace(hour=23,minute=59),mode="SSB",sponsor="ARRL",description="New hams get on the air")
+    sat,sun = _full_weekend(year,4,-1)
+    add("Helvetia Contest",sat.replace(hour=13),sun.replace(hour=13),mode="Mixed",sponsor="USKA",description="Work Swiss stations")
 
-    # MAY
+    # ── MAY ──────────────────────────────────────────────────
+    sat,sun = _full_weekend(year,5,1)
+    add("ARI International DX Contest",sat.replace(hour=12),sun.replace(hour=12),mode="Mixed",sponsor="ARI",description="Work Italian stations and provinces")
     sat,sun = _full_weekend(year,5,-1)
     add("CQ WW WPX Contest CW",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="CW",sponsor="CQ Magazine",description="Work prefixes worldwide on CW")
+    add("King of Spain CW Contest",sat.replace(hour=12),sun.replace(hour=12),mode="CW",sponsor="URE",description="Work EA stations on CW")
 
-    # JUNE
-    sat,sun = _full_weekend(year,6,4)
-    add("ARRL Field Day",sat.replace(hour=18),sun.replace(hour=20,minute=59),mode="Mixed",sponsor="ARRL",description="Ham radio's open house - portable operations across North America")
+    # ── JUNE ─────────────────────────────────────────────────
+    sat,sun = _full_weekend(year,6,3)
+    add("All Asian DX Contest CW",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="CW",sponsor="JARL",description="Work Asian stations on CW")
     sat = _nth_weekday(year,6,5,3)
     add("ARRL Kids Day",sat.replace(hour=18),sat.replace(hour=23,minute=59),mode="SSB",sponsor="ARRL",description="Getting kids on the air")
+    sat,sun = _full_weekend(year,6,4)
+    add("ARRL Field Day",sat.replace(hour=18),sun.replace(hour=20,minute=59),mode="Mixed",sponsor="ARRL",description="Ham radio's open house - portable operations across North America")
+    sat,sun = _full_weekend(year,6,-1)
+    add("King of Spain SSB Contest",sat.replace(hour=12),sun.replace(hour=12),mode="SSB",sponsor="URE",description="Work EA stations on SSB")
 
-    # JULY
+    # ── JULY ─────────────────────────────────────────────────
     add("RAC Canada Day Contest",datetime(year,7,1,0,0),datetime(year,7,1,23,59),mode="Mixed",sponsor="RAC",description="Work VE stations on Canada Day")
     sat,sun = _full_weekend(year,7,2)
     add("IARU HF World Championship",sat.replace(hour=12),sun.replace(hour=12),mode="Mixed",sponsor="IARU",description="Work HQ and member society stations worldwide")
     sat = _nth_weekday(year,7,5,3)
-    add("North American QSO Party RTTY",sat.replace(hour=18),(sat+timedelta(days=1)).replace(hour=5,minute=59),mode="RTTY",sponsor="NCJ",description="Low power, NA stations work everyone on RTTY")
+    add("North American QSO Party RTTY",sat.replace(hour=18),(sat+timedelta(days=1)).replace(hour=5,minute=59),mode="RTTY",sponsor="NCJ",description="Low power NA RTTY")
+    sat,sun = _full_weekend(year,7,-1)
+    add("RSGB IOTA Contest",sat.replace(hour=12),sun.replace(hour=12),mode="Mixed",sponsor="RSGB",description="Islands On The Air - work island stations worldwide")
 
-    # AUGUST
+    # ── AUGUST ────────────────────────────────────────────────
     sat = _nth_weekday(year,8,5,1)
     add("North American QSO Party CW",sat.replace(hour=18),(sat+timedelta(days=1)).replace(hour=5,minute=59),mode="CW",sponsor="NCJ",description="Low power, NA stations work everyone")
+    sat,sun = _full_weekend(year,8,2)
+    add("WAE DX Contest CW",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="CW",sponsor="DARC",description="Worked All Europe - DX works EU with QTC traffic")
     sat = _nth_weekday(year,8,5,3)
     add("North American QSO Party SSB",sat.replace(hour=18),(sat+timedelta(days=1)).replace(hour=5,minute=59),mode="SSB",sponsor="NCJ",description="Low power, NA stations work everyone")
 
-    # SEPTEMBER
+    # ── SEPTEMBER ─────────────────────────────────────────────
+    sat,sun = _full_weekend(year,9,1)
+    add("All Asian DX Contest SSB",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="SSB",sponsor="JARL",description="Work Asian stations on SSB")
     sat,sun = _full_weekend(year,9,2)
+    add("WAE DX Contest SSB",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="SSB",sponsor="DARC",description="Worked All Europe - DX works EU on SSB")
     add("ARRL September VHF Contest",sat.replace(hour=18),(sun+timedelta(days=1)).replace(hour=2,minute=59),mode="Mixed",bands="VHF+",sponsor="ARRL",description="Work stations on 50 MHz and above")
+    sat,sun = _full_weekend(year,9,3)
+    add("SAC Contest CW",sat.replace(hour=12),sun.replace(hour=12),mode="CW",sponsor="SAC",description="Scandinavian Activity Contest - work LA/OH/OZ/SM/TF")
     sat,sun = _full_weekend(year,9,-1)
     add("CQ WW RTTY DX Contest",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="RTTY",sponsor="CQ Magazine",description="Work CQ zones worldwide on RTTY")
 
-    # OCTOBER
-    sat,sun = _full_weekend(year,10,-1)
-    add("CQ WW DX Contest SSB",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="SSB",sponsor="CQ Magazine",description="Work CQ zones and countries worldwide - the big one!")
+    # ── OCTOBER ───────────────────────────────────────────────
+    sat,sun = _full_weekend(year,10,1)
+    add("Oceania DX Contest CW",sat.replace(hour=8),sun.replace(hour=8),mode="CW",sponsor="OCDX",description="Work VK/ZL and Pacific island stations on CW")
+    sat,sun = _full_weekend(year,10,2)
+    add("Oceania DX Contest SSB",sat.replace(hour=8),sun.replace(hour=8),mode="SSB",sponsor="OCDX",description="Work VK/ZL and Pacific island stations on SSB")
+    add("JIDX SSB Contest",sat.replace(hour=7),(sat+timedelta(days=1)).replace(hour=13),mode="SSB",sponsor="JARL",description="Work JA stations on SSB")
     mon = _nth_weekday(year,10,0,3)
     add("ARRL School Club Roundup",mon.replace(hour=13),(mon+timedelta(days=4)).replace(hour=23,minute=59),mode="Mixed",sponsor="ARRL",description="School radio clubs get on the air")
+    sat,sun = _full_weekend(year,10,3)
+    add("SAC Contest SSB",sat.replace(hour=12),sun.replace(hour=12),mode="SSB",sponsor="SAC",description="Scandinavian Activity Contest SSB")
+    sat,sun = _full_weekend(year,10,-1)
+    add("CQ WW DX Contest SSB",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="SSB",sponsor="CQ Magazine",description="Work CQ zones and countries worldwide - the big one!")
 
-    # NOVEMBER
+    # ── NOVEMBER ──────────────────────────────────────────────
     sat,sun = _full_weekend(year,11,1)
     add("ARRL Sweepstakes CW",sat.replace(hour=21),(sun+timedelta(days=1)).replace(hour=2,minute=59),mode="CW",sponsor="ARRL",description="Work all 84 ARRL/RAC sections")
+    add("Ukrainian DX Contest",sat.replace(hour=12),sun.replace(hour=12),mode="Mixed",sponsor="UARL",description="Work Ukrainian stations and oblasts")
+    sat,sun = _full_weekend(year,11,2)
+    add("WAE DX Contest RTTY",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="RTTY",sponsor="DARC",description="Worked All Europe RTTY")
+    add("OK/OM DX Contest",sat.replace(hour=12),sun.replace(hour=12),mode="CW",sponsor="CRC",description="Work Czech and Slovak stations")
     sat,sun = _full_weekend(year,11,3)
     add("ARRL Sweepstakes SSB",sat.replace(hour=21),(sun+timedelta(days=1)).replace(hour=2,minute=59),mode="SSB",sponsor="ARRL",description="Work all 84 ARRL/RAC sections on phone")
     sat,sun = _full_weekend(year,11,-1)
     add("CQ WW DX Contest CW",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="CW",sponsor="CQ Magazine",description="Work CQ zones and countries worldwide on CW")
 
-    # DECEMBER
+    # ── DECEMBER ──────────────────────────────────────────────
     sat,sun = _full_weekend(year,12,1)
     add("ARRL 160-Meter Contest",(sat-timedelta(days=1)).replace(hour=22),sun.replace(hour=15,minute=59),mode="CW",bands="160m",sponsor="ARRL",description="CW on top band")
     sat,sun = _full_weekend(year,12,2)
     add("ARRL 10-Meter Contest",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="Mixed",bands="10m",sponsor="ARRL",description="Work the world on 10 meters")
     sun = _nth_weekday(year,12,6,3)
     add("ARRL Rookie Roundup CW",sun.replace(hour=18),sun.replace(hour=23,minute=59),mode="CW",sponsor="ARRL",description="New CW operators get on the air")
+    csat,csun = _full_weekend(year,12,3)
+    add("Croatian CW Contest",csat.replace(hour=14),csun.replace(hour=14),mode="CW",sponsor="HRS",description="Work Croatian stations on CW")
     sat,sun = _full_weekend(year,12,-1)
     add("RAC Winter Contest",sat.replace(hour=0),sun.replace(hour=23,minute=59),mode="Mixed",sponsor="RAC",description="Work VE stations")
-    sat,sun = _full_weekend(year,12,-1)
     add("Stew Perry Topband Distance Challenge",sat.replace(hour=15),sun.replace(hour=15),mode="CW",bands="160m",sponsor="BORING ARC",description="Distance-based scoring on 160m")
 
     contests.sort(key=lambda c: c["start"])
     return contests
 
-def get_upcoming_contests(days_ahead=90):
+def get_upcoming_contests(days_ahead=120):
     now = datetime.utcnow()
     cutoff = now + timedelta(days=days_ahead)
     contests = []
@@ -160,5 +196,5 @@ if __name__ == "__main__":
             current_month = month
         date_str = start.strftime("%b %d")
         if start.date() != end.date(): date_str += f"-{end.strftime('%d')}"
-        print(f"  {date_str:12s} {c['name']:40s} [{c['mode']}]")
+        print(f"  {date_str:12s} {c['name']:40s} [{c['mode']:5s}] {c['sponsor']}")
     print(f"\n  Total: {len(contests)} contests\n")
