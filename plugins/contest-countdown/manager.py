@@ -21,8 +21,6 @@ from ux_constants import UX, load_fonts, get_mode_color, get_sponsor_color
 
 logger = logging.getLogger(__name__)
 __version__ = "2.2.0"
-
-
 class ContestCountdownPlugin(BasePlugin):
     """Contest countdown with attention + scroll phases for active contests"""
 
@@ -80,19 +78,12 @@ class ContestCountdownPlugin(BasePlugin):
         self.font, self.font_large = load_fonts(__file__)
 
     def _load_contests(self):
-        """Load contests from JSON file in plugin directory"""
+        """Load contests from perpetual calendar generator"""
         self.contests = []
-        json_path = Path(__file__).parent / 'contests_2026.json'
-
-        if not json_path.exists():
-            logger.error(f"Contest calendar not found: {json_path}")
-            return
-
         try:
-            with open(json_path, 'r') as f:
-                data = json.load(f)
-
-            for c in data.get("contests", []):
+            from contest_calendar import get_upcoming_contests
+            data = get_upcoming_contests(days_ahead=120)
+            for c in data:
                 try:
                     start = datetime.fromisoformat(c["start"].replace("Z", "+00:00"))
                     end = datetime.fromisoformat(c["end"].replace("Z", "+00:00"))
@@ -106,9 +97,10 @@ class ContestCountdownPlugin(BasePlugin):
                     })
                 except Exception as e:
                     logger.warning(f"Skipping contest entry: {e}")
-
             self.contests.sort(key=lambda x: x["start"])
-            logger.info(f"Loaded {len(self.contests)} contests from {json_path}")
+            logger.info(f"Loaded {len(self.contests)} contests from perpetual calendar")
+        except Exception as e:
+            logger.error(f"Failed to generate contest calendar: {e}")
 
         except Exception as e:
             logger.error(f"Failed to load contest calendar: {e}")
