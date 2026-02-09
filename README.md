@@ -200,8 +200,8 @@ python3 ~/LEDMatrix/plugin-repos/weather-alerts/test_alerts.py advisory  # info 
 python3 ~/LEDMatrix/plugin-repos/weather-alerts/test_alerts.py clear     # remove test
 
 # DX priority spot test (Top 10 MEGA JACKPOT)
-echo '{"callsign":"P5DX","frequency":14195.0}' > /tmp/test_priority_spot.json
-rm /tmp/test_priority_spot.json   # clear after watching
+echo '{"test_priority":true,"callsign":"P5DX","rank":1,"name":"North Korea","band":"20m","freq":"14195000","mode":"SSB"}' > /tmp/hamradio_test_priority.json
+rm /tmp/hamradio_test_priority.json   # clear after watching
 
 # Contest calendar
 python3 ~/LEDMatrix/plugin-repos/contest-countdown/contest_calendar.py 2026

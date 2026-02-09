@@ -5,3 +5,4 @@ __pycache__/
 config.json
 .dependencies_installed
 docker-compose.yaml
+wa0o-ledmatrix-plugins/
