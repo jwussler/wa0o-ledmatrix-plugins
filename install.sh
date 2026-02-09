@@ -456,6 +456,7 @@ hs['show_digital'] = True
 hs['show_flags'] = True
 hs['show_frequency'] = True
 hs['show_age'] = True
+hs['refresh_interval'] = 60
 c['hamradio-spots'] = hs
 
 # ── weather-alerts ──
