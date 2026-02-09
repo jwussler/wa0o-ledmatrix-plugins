@@ -515,19 +515,24 @@ if [ ! -f "$OVERRIDE_FILE" ]; then
 [Unit]
 After=docker.service
 Requires=docker.service
+
+[Service]
+ExecStartPre=/bin/sleep 30
 OVERRIDEEOF
     sudo systemctl daemon-reload
-    print_step "LEDMatrix will now wait for Docker before starting on boot"
+    print_step "LEDMatrix will wait for Docker + 30s for API to cache spots"
 else
-    if grep -q "docker.service" "$OVERRIDE_FILE" 2>/dev/null; then
-        print_step "Docker boot dependency already configured"
+    if grep -q "ExecStartPre" "$OVERRIDE_FILE" 2>/dev/null; then
+        print_step "Boot delay already configured"
     else
         sudo bash -c "cat >> $OVERRIDE_FILE" << 'OVERRIDEEOF'
 
-[Unit]
-After=docker.service
-Requires=docker.service
+[Service]
+ExecStartPre=/bin/sleep 30
 OVERRIDEEOF
+        sudo systemctl daemon-reload
+        print_step "Added 30s startup delay for spot caching"
+    fi
         sudo systemctl daemon-reload
         print_step "Added Docker dependency to existing override"
     fi
