@@ -1,7 +1,7 @@
 {
   "id": "contest-countdown",
   "name": "Contest Countdown",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "description": "Countdown timers for major ham radio contests. Loads from JSON for easy editing.",
   "author": "WA0O",
   "license": "GPL-3.0",
@@ -9,5 +9,10 @@
   "entry_point": "manager.py",
   "class_name": "ContestCountdownPlugin",
   "dependencies": [],
-  "tags": ["ham radio", "contest", "countdown", "calendar"]
+  "tags": [
+    "ham radio",
+    "contest",
+    "countdown",
+    "calendar"
+  ]
 }

@@ -1,7 +1,7 @@
 {
   "id": "hamradio-spots",
   "name": "Ham Radio DX Spots",
-  "version": "1.0.0",
+  "version": "3.4.0",
   "description": "Display real-time DX cluster spots, POTA activations, and band activity from a JSON feed",
   "author": "WA0O",
   "license": "GPL-3.0",
@@ -10,5 +10,12 @@
   "entry_point": "manager.py",
   "class_name": "HamRadioSpotsPlugin",
   "dependencies": [],
-  "tags": ["ham radio", "amateur radio", "dx", "pota", "spots", "cluster"]
+  "tags": [
+    "ham radio",
+    "amateur radio",
+    "dx",
+    "pota",
+    "spots",
+    "cluster"
+  ]
 }

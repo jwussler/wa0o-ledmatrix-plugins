@@ -1,7 +1,7 @@
 {
   "id": "wavelog-qsos",
   "name": "Wavelog Recent QSOs",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "description": "Display recent QSOs from your Wavelog logbook on the LED matrix. Only shows contacts less than 1 hour old.",
   "author": "WA0O",
   "license": "GPL-3.0",
@@ -9,5 +9,10 @@
   "entry_point": "manager.py",
   "class_name": "WavelogQSOsPlugin",
   "dependencies": [],
-  "tags": ["ham radio", "wavelog", "logbook", "qso"]
+  "tags": [
+    "ham radio",
+    "wavelog",
+    "logbook",
+    "qso"
+  ]
 }

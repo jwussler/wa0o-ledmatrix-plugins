@@ -297,8 +297,8 @@ class HamRadioSpotsPlugin(BasePlugin):
             try:
                 img = Image.open(flag_file).convert("RGB").resize((10, 7), Image.LANCZOS)
                 self.flags[code] = img
-            except:
-                pass
+            except Exception as e:
+                self.logger.debug(f"Non-critical error: {e}")
     
     def _create_world_map(self):
         self.world_map = Image.new('RGB', (self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT), (0, 0, 0))
@@ -489,7 +489,7 @@ class HamRadioSpotsPlugin(BasePlugin):
                     filtered.append(spot)
                 elif self.show_digital and not is_voice:
                     filtered.append(spot)
-            except:
+            except Exception:
                 filtered.append(spot)
             if len(filtered) >= self.max_spots:
                 break
@@ -727,7 +727,7 @@ class HamRadioSpotsPlugin(BasePlugin):
             cos_hour = -math.tan(lat_rad) * math.tan(dec_rad)
             cos_hour = max(-1, min(1, cos_hour))
             hour_angle = math.degrees(math.acos(cos_hour))
-        except:
+        except Exception:
             hour_angle = 90
         solar_noon = 12 - (lon / 15)
         sunrise_utc = solar_noon - (hour_angle / 15)
@@ -808,6 +808,13 @@ class HamRadioSpotsPlugin(BasePlugin):
         return lat, lon
     
     # Helper methods
+    def _format_freq(self, freq) -> str:
+        """Convert kHz to MHz string (e.g., 14195 → '14.195')"""
+        try:
+            return f"{float(freq)/1000:.3f}"
+        except (ValueError, TypeError):
+            return str(freq)
+    
     def _get_mode(self, spot: Dict) -> str:
         mode = spot.get("dxcc_spotted", {}).get("pota_mode", "") or spot.get("mode", "")
         if not mode:
@@ -815,8 +822,8 @@ class HamRadioSpotsPlugin(BasePlugin):
                 freq = float(spot.get("frequency", 0))
                 band = spot.get("band", "")
                 mode = "SSB" if self._is_voice_freq(freq, band) else "CW"
-            except:
-                pass
+            except Exception as e:
+                self.logger.debug(f"Non-critical error: {e}")
         return mode.upper()[:3] if mode else ""
     
     def _get_age(self, spot: Dict) -> str:
@@ -831,7 +838,7 @@ class HamRadioSpotsPlugin(BasePlugin):
             elif minutes < 60:
                 return f"{minutes}m"
             return f"{minutes // 60}h"
-        except:
+        except Exception:
             return ""
     
     def _get_flag(self, callsign: str) -> Optional[Image.Image]:
@@ -921,10 +928,7 @@ class HamRadioSpotsPlugin(BasePlugin):
         name = spot.get("priority_name", "RARE DX")
         rank = spot.get("priority_rank", 1)
 
-        try:
-            freq_str = f"{float(freq)/1000:.3f}"
-        except:
-            freq_str = str(freq)
+        freq_str = self._format_freq(freq)
 
         flag = self._get_flag(callsign)
         band_color = self.BAND_COLORS.get(band, (255, 255, 0))
@@ -1029,10 +1033,7 @@ class HamRadioSpotsPlugin(BasePlugin):
         w_score = spot.get("workability_score", 50)
         w_na = spot.get("workability_na_count", 0)
 
-        try:
-            freq_str = f"{float(freq)/1000:.3f}"
-        except:
-            freq_str = str(freq)
+        freq_str = self._format_freq(freq)
 
         flag = self._get_flag(callsign)
         band_color = self.BAND_COLORS.get(band, (255, 255, 0))
@@ -1182,10 +1183,7 @@ class HamRadioSpotsPlugin(BasePlugin):
         w_score = spot.get("workability_score", 50)
         w_na = spot.get("workability_na_count", 0)
 
-        try:
-            freq_str = f"{float(freq)/1000:.3f}"
-        except:
-            freq_str = str(freq)
+        freq_str = self._format_freq(freq)
 
         flag = self._get_flag(callsign)
         band_color = self.BAND_COLORS.get(band, (255, 255, 0))
@@ -1283,10 +1281,7 @@ class HamRadioSpotsPlugin(BasePlugin):
         name = spot.get("priority_name", "RARE DX")
         rank = spot.get("priority_rank", 0)
 
-        try:
-            freq_str = f"{float(freq)/1000:.3f}"
-        except:
-            freq_str = str(freq)
+        freq_str = self._format_freq(freq)
 
         W = self.DISPLAY_WIDTH
         H = self.DISPLAY_HEIGHT
@@ -1443,8 +1438,8 @@ class HamRadioSpotsPlugin(BasePlugin):
                     bucket = int(age_min / 10)
                     if 0 <= bucket < 6:
                         buckets[bucket] += 1
-            except:
-                pass
+            except Exception as e:
+                self.logger.debug(f"Non-critical error: {e}")
         
         max_bucket = max(buckets) or 1
         total = sum(buckets)
@@ -1619,7 +1614,7 @@ class HamRadioSpotsPlugin(BasePlugin):
                 alert = "QUIET"
                 alert_color = (0, 255, 0)
                 status = "Normal"
-        except:
+        except Exception:
             alert = "N/A"
             alert_color = (128, 128, 128)
             status = "Unknown"
@@ -1643,8 +1638,8 @@ class HamRadioSpotsPlugin(BasePlugin):
             else:
                 rec = "40-80m Best"
             draw.text((100, self.ROW2_Y), rec, font=self.font, fill=(0, 255, 0))
-        except:
-            pass
+        except Exception as e:
+            self.logger.debug(f"Non-critical error: {e}")
     
     def _draw_longpath_view(self, img: Image.Image, draw: ImageDraw.ImageDraw) -> None:
         """Long Path Indicator"""
@@ -1744,7 +1739,7 @@ class HamRadioSpotsPlugin(BasePlugin):
             muf = max(7, min(30, base_muf))
             
             draw.text((40, self.TITLE_Y), f"~{muf:.0f} MHz", font=self.font, fill=(0, 255, 255))
-        except:
+        except Exception:
             muf = 14
             draw.text((40, self.TITLE_Y), "Est: 14 MHz", font=self.font, fill=(128, 128, 128))
         
@@ -1787,8 +1782,8 @@ class HamRadioSpotsPlugin(BasePlugin):
                     score *= 1.5
                 elif band in ["20m", "17m"] and sfi_val >= 90:
                     score *= 1.3
-            except:
-                pass
+            except Exception as e:
+                self.logger.debug(f"Non-critical error: {e}")
             scores[band] = score
         
         # Find best band
@@ -1845,19 +1840,19 @@ class HamRadioSpotsPlugin(BasePlugin):
             try:
                 img.paste(flag, (x, y))
                 x += self.SPOT_FLAG_WIDTH
-            except:
-                pass
+            except Exception as e:
+                self.logger.debug(f"Non-critical error: {e}")
         
         draw.text((x, y), callsign, font=self.font, fill=call_color)
         x += len(callsign) * self.SPOT_CHAR_WIDTH + self.SPOT_SPACING
         
         if self.show_frequency:
             try:
-                freq_str = f"{float(spot.get('frequency', 0))/1000:.3f}"
+                freq_str = self._format_freq(spot.get('frequency', 0))
                 draw.text((x, y), freq_str, font=self.font, fill=(150, 150, 150))
                 x += len(freq_str) * self.SPOT_CHAR_WIDTH + self.SPOT_SPACING
-            except:
-                pass
+            except Exception as e:
+                self.logger.debug(f"Non-critical error: {e}")
         
         if band:
             draw.text((x, y), band, font=self.font, fill=self._color_for_band(band))
@@ -1903,13 +1898,13 @@ class HamRadioSpotsPlugin(BasePlugin):
         try:
             sfi_val = int(str(sfi).strip())
             sfi_color = (0, 255, 0) if sfi_val >= 150 else (255, 255, 0) if sfi_val >= 100 else (255, 100, 100)
-        except:
+        except Exception:
             sfi_color = (200, 200, 200)
         
         try:
             k_val = int(str(k_idx).strip())
             k_color = (0, 255, 0) if k_val <= 2 else (255, 255, 0) if k_val <= 4 else (255, 0, 0)
-        except:
+        except Exception:
             k_color = (200, 200, 200)
         
         draw.text((40, self.TITLE_Y), f"SFI:{sfi}", font=self.font, fill=sfi_color)
@@ -2079,8 +2074,8 @@ class HamRadioSpotsPlugin(BasePlugin):
                     try:
                         os.remove(test_file)
                         self.logger.info("Removed test priority file after timeout")
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        self.logger.debug(f"Non-critical error: {e}")
                 self.test_priority_spot = None
         
         # If still priority active after timeout check, return JACKPOT cards
@@ -2092,47 +2087,30 @@ class HamRadioSpotsPlugin(BasePlugin):
         
         # Normal mode - return all views
         images = []
+        view_renderers = {
+            "spots": self._draw_spots_view,
+            "conditions": self._draw_conditions_view,
+            "hotspots": self._draw_hotspots_view,
+            "map": self._draw_map_view,
+            "grayline": self._draw_grayline_view,
+            "continents": self._draw_continents_view,
+            "bandopen": self._draw_band_opening_view,
+            "rate": self._draw_qso_rate_view,
+            "clock": self._draw_clock_view,
+            "distance": self._draw_distance_view,
+            "stats": self._draw_stats_view,
+            "pota": self._draw_pota_view,
+            "spacewx": self._draw_space_weather_view,
+            "longpath": self._draw_longpath_view,
+            "beacon": self._draw_beacon_view,
+            "muf": self._draw_muf_view,
+            "bestband": self._draw_bestband_view,
+        }
         for view in self.vegas_views:
             img = Image.new('RGB', (self.DISPLAY_WIDTH, self.DISPLAY_HEIGHT), (0, 0, 0))
             draw = ImageDraw.Draw(img)
-            
-            if view == "spots":
-                self._draw_spots_view(img, draw)
-            elif view == "conditions":
-                self._draw_conditions_view(img, draw)
-            elif view == "hotspots":
-                self._draw_hotspots_view(img, draw)
-            elif view == "map":
-                self._draw_map_view(img, draw)
-            elif view == "grayline":
-                self._draw_grayline_view(img, draw)
-            elif view == "continents":
-                self._draw_continents_view(img, draw)
-            elif view == "bandopen":
-                self._draw_band_opening_view(img, draw)
-            elif view == "rate":
-                self._draw_qso_rate_view(img, draw)
-            elif view == "clock":
-                self._draw_clock_view(img, draw)
-            elif view == "distance":
-                self._draw_distance_view(img, draw)
-            elif view == "stats":
-                self._draw_stats_view(img, draw)
-            elif view == "pota":
-                self._draw_pota_view(img, draw)
-            elif view == "spacewx":
-                self._draw_space_weather_view(img, draw)
-            elif view == "longpath":
-                self._draw_longpath_view(img, draw)
-            elif view == "beacon":
-                self._draw_beacon_view(img, draw)
-            elif view == "muf":
-                self._draw_muf_view(img, draw)
-            elif view == "bestband":
-                self._draw_bestband_view(img, draw)
-            else:
-                self._draw_spots_view(img, draw)
-            
+            renderer = view_renderers.get(view, self._draw_spots_view)
+            renderer(img, draw)
             images.append(img)
         
         # DROPIN (Top 11-50): Insert priority card at front of rotation
@@ -2166,10 +2144,7 @@ class HamRadioSpotsPlugin(BasePlugin):
         name = spot.get("priority_name", "RARE DX")
         rank = spot.get("priority_rank", 1)
 
-        try:
-            freq_str = f"{float(freq)/1000:.3f}"
-        except Exception:
-            freq_str = str(freq)
+        freq_str = self._format_freq(freq)
 
         CW = UX.CHAR_WIDTH
         band_color = self.BAND_COLORS.get(band, (255, 255, 0))

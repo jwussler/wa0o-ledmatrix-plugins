@@ -1,7 +1,7 @@
 {
   "id": "weather-alerts",
   "name": "Weather Alerts",
-  "version": "1.0.0",
+  "version": "2.5.0",
   "description": "NWS severe weather alerts for your area - takes over display when alerts are active",
   "author": "WA0O",
   "license": "GPL-3.0",
@@ -9,5 +9,11 @@
   "entry_point": "manager.py",
   "class_name": "WeatherAlertsPlugin",
   "dependencies": [],
-  "tags": ["weather", "alerts", "severe", "NWS", "safety"]
+  "tags": [
+    "weather",
+    "alerts",
+    "severe",
+    "NWS",
+    "safety"
+  ]
 }

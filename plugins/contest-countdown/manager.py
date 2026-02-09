@@ -8,7 +8,6 @@ v2.2.0: Active contests get attention phase (dramatic ON THE AIR strobe) +
         Upcoming contests remain static countdown cards.
 """
 import logging
-import json
 import time
 import math
 from datetime import datetime, timezone, timedelta
@@ -72,7 +71,7 @@ class ContestCountdownPlugin(BasePlugin):
         self._last_update_time = 0
         self._update_throttle = 2.0
 
-        logger.info(f"Contest Countdown v{__version__} init, {len(self.contests)} contests loaded")
+        self.logger.info(f"Contest Countdown v{__version__} init, {len(self.contests)} contests loaded")
 
     def _load_fonts(self):
         self.font, self.font_large = load_fonts(__file__)
@@ -96,14 +95,14 @@ class ContestCountdownPlugin(BasePlugin):
                         "sponsor": c.get("sponsor", "OTHER"),
                     })
                 except Exception as e:
-                    logger.warning(f"Skipping contest entry: {e}")
+                    self.logger.warning(f"Skipping contest entry: {e}")
             self.contests.sort(key=lambda x: x["start"])
-            logger.info(f"Loaded {len(self.contests)} contests from perpetual calendar")
+            self.logger.info(f"Loaded {len(self.contests)} contests from perpetual calendar")
         except Exception as e:
-            logger.error(f"Failed to generate contest calendar: {e}")
+            self.logger.error(f"Failed to generate contest calendar: {e}")
 
         except Exception as e:
-            logger.error(f"Failed to load contest calendar: {e}")
+            self.logger.error(f"Failed to load contest calendar: {e}")
 
     def _get_active_and_upcoming(self):
         """Get active contests and upcoming within countdown window"""
@@ -209,7 +208,7 @@ class ContestCountdownPlugin(BasePlugin):
         self._ticker_loop_width = total_w + self._ticker_gap
         self._ticker_contest_key = self._contest_key(contest)
 
-        logger.debug(f"Built active contest ticker: {total_w}px wide")
+        self.logger.debug(f"Built active contest ticker: {total_w}px wide")
 
     def _draw_attn_card(self, img, draw, contest, card_num, now):
         """Draw dramatic ON THE AIR attention card."""
@@ -293,6 +292,13 @@ class ContestCountdownPlugin(BasePlugin):
     # =========================================================================
     # DISPLAY - STATELESS FRAME RENDERER
     # =========================================================================
+
+    def validate_config(self) -> bool:
+        """Validate required configuration fields."""
+        if not self.contests:
+            self.logger.error("No contests loaded from calendar")
+            return False
+        return True
 
     def display(self, display_mode=None, force_clear=False):
         """Render ONE frame per call. No loops, no sleep."""

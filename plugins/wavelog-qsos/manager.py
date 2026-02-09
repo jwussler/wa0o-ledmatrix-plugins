@@ -230,8 +230,8 @@ class WavelogQSOsPlugin(BasePlugin):
             if seg["flag"]:
                 try:
                     self._ticker_img.paste(seg["flag"], (x, text_y + 1))
-                except Exception:
-                    pass
+                except Exception as e:
+                    self.logger.debug(f"Non-critical error: {e}")
                 x += seg["flag_w"]
 
             # Callsign (yellow)
@@ -272,6 +272,16 @@ class WavelogQSOsPlugin(BasePlugin):
     # =========================================================================
     # DISPLAY - STATELESS FRAME RENDERER (125 FPS)
     # =========================================================================
+
+    def validate_config(self) -> bool:
+        """Validate required configuration fields."""
+        if self.fetch_method == "api" and not self.api_key:
+            self.logger.error("API method selected but no api_key configured")
+            return False
+        if not self.wavelog_url:
+            self.logger.error("No wavelog_url configured")
+            return False
+        return True
 
     def display(self, display_mode: str = None, force_clear: bool = False) -> None:
         """Render ONE frame per call. No loops, no sleep.
@@ -409,8 +419,8 @@ class WavelogQSOsPlugin(BasePlugin):
                         if q.get("_datetime_utc_str"):
                             try:
                                 q["_datetime_utc"] = datetime.fromisoformat(q["_datetime_utc_str"])
-                            except:
-                                pass
+                            except Exception as e:
+                                self.logger.debug(f"Non-critical error: {e}")
                     self._cached_qsos = cached_qsos
                     self.logger.info(f"Restored {len(cached_qsos)} cached QSOs")
                 if cached_id > 0:
@@ -728,8 +738,8 @@ class WavelogQSOsPlugin(BasePlugin):
                 img = Image.open(flag_file).convert("RGB").resize(
                     (self.FLAG_WIDTH, self.FLAG_HEIGHT), Image.LANCZOS)
                 self.flags[code] = img
-            except:
-                pass
+            except Exception as e:
+                self.logger.debug(f"Non-critical error: {e}")
         self.logger.info(f"Loaded {len(self.flags)} country flags")
 
     def _get_flag(self, callsign: str) -> Optional[Image.Image]:

@@ -117,8 +117,8 @@ class WeatherAlertsPlugin(BasePlugin):
     def __init__(self, plugin_id, config, display_manager, cache_manager, plugin_manager):
         super().__init__(plugin_id, config, display_manager, cache_manager, plugin_manager)
 
-        self.latitude = self.config.get("latitude", 40.7128)
-        self.longitude = self.config.get("longitude", -74.0060)
+        self.latitude = self.config.get("latitude", 38.7881)
+        self.longitude = self.config.get("longitude", -90.4974)
         self.check_interval = self.config.get("check_interval", 120)
 
         self.alerts = []
@@ -163,7 +163,7 @@ class WeatherAlertsPlugin(BasePlugin):
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.test_file = "/tmp/weather_alert_test.json"
 
-        logger.info(f"WeatherAlerts v{__version__} init {self.latitude},{self.longitude}")
+        self.logger.info(f"WeatherAlerts v{__version__} init {self.latitude},{self.longitude}")
 
     # =========================================================================
     # HELPERS
@@ -252,6 +252,16 @@ class WeatherAlertsPlugin(BasePlugin):
     # =========================================================================
     # DATA FETCHING
     # =========================================================================
+    def validate_config(self) -> bool:
+        """Validate required configuration fields."""
+        if not (-90 <= self.latitude <= 90):
+            self.logger.error(f"Invalid latitude: {self.latitude}")
+            return False
+        if not (-180 <= self.longitude <= 180):
+            self.logger.error(f"Invalid longitude: {self.longitude}")
+            return False
+        return True
+
     def update(self):
         now = time.time()
 
@@ -266,14 +276,14 @@ class WeatherAlertsPlugin(BasePlugin):
                 self.test_active = True
                 self._update_flags()
                 self._manage_priority_file()
-                logger.info(f"TEST: {len(self.alerts)} alerts "
+                self.logger.info(f"TEST: {len(self.alerts)} alerts "
                            f"T1:{sum(1 for a in self.alerts if a['_tier']==1)} "
                            f"T2:{sum(1 for a in self.alerts if a['_tier']==2)} "
                            f"T3:{sum(1 for a in self.alerts if a['_tier']==3)} "
                            f"Weights:{[a.get('_weight',0) for a in self.alerts if a['_tier']==1]}")
                 return
             except Exception as e:
-                logger.error(f"Test load error: {e}")
+                self.logger.error(f"Test load error: {e}")
 
         if now - self.last_fetch < self.check_interval:
             return
@@ -283,7 +293,7 @@ class WeatherAlertsPlugin(BasePlugin):
         try:
             url = f"https://api.weather.gov/alerts/active?point={self.latitude},{self.longitude}"
             headers = {
-                "User-Agent": "(LEDMatrix Weather Alerts, your-email@example.com)",
+                "User-Agent": "(LEDMatrix Weather Alerts, jwussler@gmail.com)",
                 "Accept": "application/geo+json",
             }
             resp = requests.get(url, headers=headers, timeout=15)
@@ -319,17 +329,17 @@ class WeatherAlertsPlugin(BasePlugin):
             try:
                 with open(self.cache_dir / "alerts.json", "w") as f:
                     json.dump(self.alerts, f)
-            except Exception:
-                pass
+            except Exception as e:
+                self.logger.debug(f"Non-critical error: {e}")
 
             if self.alerts:
-                logger.warning(f"ALERTS: {', '.join(a['event'] for a in self.alerts)}")
+                self.logger.warning(f"ALERTS: {', '.join(a['event'] for a in self.alerts)}")
             else:
-                logger.info("No active alerts")
+                self.logger.info("No active alerts")
 
         except Exception as e:
             self.fetch_errors += 1
-            logger.error(f"NWS error ({self.fetch_errors}): {e}")
+            self.logger.error(f"NWS error ({self.fetch_errors}): {e}")
             if not self.alerts:
                 try:
                     with open(self.cache_dir / "alerts.json", "r") as f:
@@ -338,8 +348,8 @@ class WeatherAlertsPlugin(BasePlugin):
                         a["_tier"] = self._get_tier(a)
                         a["_weight"] = self._get_weight(a)
                     self._update_flags()
-                except Exception:
-                    pass
+                except Exception as e:
+                    self.logger.debug(f"Non-critical error: {e}")
 
     def _update_flags(self):
         self.has_tier1 = any(a["_tier"] == 1 for a in self.alerts)
@@ -359,8 +369,8 @@ class WeatherAlertsPlugin(BasePlugin):
                                "events": [a["event"] for a in self.alerts
                                           if a["_tier"] <= 2]}, f)
                 os.chmod(PRIORITY_FILE, 0o666)
-            except Exception:
-                pass
+            except Exception as e:
+                self.logger.debug(f"Non-critical error: {e}")
         else:
             try:
                 os.remove(PRIORITY_FILE)
@@ -391,7 +401,7 @@ class WeatherAlertsPlugin(BasePlugin):
         self._scroll_start = time.time()
         self._cache_event = None  # Force ticker rebuild
         self.enable_scrolling = True
-        logger.info("T2 ticker cycle STARTING")
+        self.logger.info("T2 ticker cycle STARTING")
 
     def _end_t2_cycle(self):
         """End a T2 ticker cycle, enter cooldown."""
@@ -403,7 +413,7 @@ class WeatherAlertsPlugin(BasePlugin):
         self.enable_scrolling = self.has_tier1  # Only keep scrolling for T1
         self._manage_priority_file()
         cooldown_min = self._t2_cooldown / 60
-        logger.info(f"T2 ticker cycle ENDED - cooldown {cooldown_min:.0f}min")
+        self.logger.info(f"T2 ticker cycle ENDED - cooldown {cooldown_min:.0f}min")
 
     # =========================================================================
     # DRAWING PRIMITIVES
@@ -495,7 +505,7 @@ class WeatherAlertsPlugin(BasePlugin):
         self._draw_border(draw, (0, 80, 0), 1)
         self._text(draw, self.MARGIN, self.ROW1, "NWS WEATHER ALERTS", (0, 150, 0))
         self._text(draw, self.MARGIN, self.ROW2, "No active alerts", (0, 100, 0))
-        self._text(draw, self.MARGIN, self.ROW3, "Your Area", (80, 80, 80))
+        self._text(draw, self.MARGIN, self.ROW3, "Saint Charles, MO", (80, 80, 80))
 
     # =========================================================================
     # VEGAS MODE
@@ -543,7 +553,7 @@ class WeatherAlertsPlugin(BasePlugin):
                     self._text(draw, self.MARGIN, 12, text[:self.CHARS_PER_LINE], (255, 255, 255))
                     self._stamp_test(draw)
                     images.append(img)
-            logger.info(f"Vegas T1: {len(images)} warning cards for {len(t1_alerts)} alerts")
+            self.logger.info(f"Vegas T1: {len(images)} warning cards for {len(t1_alerts)} alerts")
             return images if images else None
 
         # T2 active cycle - show watch cards in rotation
@@ -577,11 +587,11 @@ class WeatherAlertsPlugin(BasePlugin):
                 else:
                     self._draw_info_card(img, draw, alert)
             except Exception as e:
-                logger.error(f"Draw error {view}: {e}")
+                self.logger.error(f"Draw error {view}: {e}")
             self._stamp_test(draw)
             images.append(img)
 
-        logger.info(f"Vegas: {len(images)} alert images")
+        self.logger.info(f"Vegas: {len(images)} alert images")
         return images if images else None
 
     # =========================================================================
