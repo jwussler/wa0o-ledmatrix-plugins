@@ -34,6 +34,31 @@ print_step() { echo -e "  ${GREEN}[✓]${NC} $1"; }
 print_warn() { echo -e "  ${YELLOW}[!]${NC} $1"; }
 print_error() { echo -e "  ${RED}[✗]${NC} $1"; }
 
+# ─── Docker helper: tries without sudo first, then with sudo ──
+run_docker() {
+    if docker "$@" 2>/dev/null; then
+        return 0
+    elif sudo docker "$@" 2>/dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+run_docker_compose() {
+    if docker compose "$@" 2>&1; then
+        return 0
+    elif sudo docker compose "$@" 2>&1; then
+        return 0
+    elif docker-compose "$@" 2>&1; then
+        return 0
+    elif sudo docker-compose "$@" 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 # ═════════════════════════════════════════════════════════════════
 # PREFLIGHT CHECKS
 # ═════════════════════════════════════════════════════════════════
@@ -44,7 +69,7 @@ echo ""
 echo "    ★ DXClusterAPI      Real-time DX spot caching backend (Docker)"
 echo "    ★ hamradio-spots    DX spots, solar, propagation, POTA, Top 50 alerts"
 echo "    ★ weather-alerts    NWS tiered warnings with chevron display takeover"
-echo "    ★ contest-countdown Countdown timers for major ham radio contests"
+echo "    ★ contest-countdown Countdown timers for 55 worldwide ham radio contests"
 echo "    ★ wavelog-qsos      Recent contacts from your Wavelog instance"
 echo "    ★ news              Scrolling RSS news ticker"
 echo "    ★ ux_constants      Shared display module for consistent UX"
@@ -55,7 +80,8 @@ if [ ! -d "$LEDMATRIX_DIR" ]; then
     print_error "LEDMatrix not found at $LEDMATRIX_DIR"
     echo ""
     echo "  This plugin bundle requires LEDMatrix to already be installed."
-    echo "  Install LEDMatrix first, then re-run this script."
+    echo "  Install LEDMatrix first: https://github.com/ChuckBuilds/LEDMatrix"
+    echo "  Then re-run this script."
     exit 1
 fi
 print_step "LEDMatrix found at $LEDMATRIX_DIR"
@@ -74,11 +100,20 @@ print_header "Step 1: Your Station Configuration"
 echo -e "  ${BOLD}DX Cluster Connection${NC}"
 echo ""
 
-read -rp "  Your callsign for DX cluster login (e.g. N0CALL-3): " USER_DXCALL
+read -rp "  Your callsign for DX cluster login (e.g. WA0O-3): " USER_DXCALL
 while [ -z "$USER_DXCALL" ]; do
     echo -e "  ${RED}Callsign is required.${NC}"
     read -rp "  Your callsign: " USER_DXCALL
 done
+# Confirm callsign to avoid typos
+echo -e "  ${YELLOW}You entered: ${BOLD}${USER_DXCALL}${NC}"
+read -rp "  Is this correct? (Y/n): " CALL_CONFIRM
+if [[ "$CALL_CONFIRM" =~ ^[Nn]$ ]]; then
+    read -rp "  Your callsign: " USER_DXCALL
+    while [ -z "$USER_DXCALL" ]; do
+        read -rp "  Your callsign: " USER_DXCALL
+    done
+fi
 # Extract base callsign (strip SSID like -3)
 USER_CALLSIGN="${USER_DXCALL%%-*}"
 
@@ -90,14 +125,19 @@ echo -e "  ${BOLD}Wavelog Integration${NC}"
 echo "  DXClusterAPI and Wavelog QSOs need your Wavelog instance."
 echo ""
 
-read -rp "  Wavelog API lookup URL (e.g. https://your-wavelog.com/index.php/api/lookup): " USER_WAVELOG_URL
-while [ -z "$USER_WAVELOG_URL" ]; do
+read -rp "  Wavelog base URL (e.g. https://your-wavelog.com/index.php): " USER_WAVELOG_INPUT
+while [ -z "$USER_WAVELOG_INPUT" ]; do
     echo -e "  ${RED}Wavelog URL is required for DXCC lookups.${NC}"
-    read -rp "  Wavelog API lookup URL: " USER_WAVELOG_URL
+    read -rp "  Wavelog base URL: " USER_WAVELOG_INPUT
 done
 
-# Derive the base Wavelog URL (strip /api/lookup if present)
-USER_WAVELOG_BASE=$(echo "$USER_WAVELOG_URL" | sed 's|/api/lookup.*||')
+# Normalize the Wavelog URL — strip trailing slash, ensure /api/lookup for DXClusterAPI
+USER_WAVELOG_INPUT="${USER_WAVELOG_INPUT%/}"
+# Strip /api/lookup if they included it, we'll add it ourselves
+USER_WAVELOG_BASE=$(echo "$USER_WAVELOG_INPUT" | sed 's|/api/lookup.*||')
+# Build the full lookup URL for DXClusterAPI
+USER_WAVELOG_LOOKUP="${USER_WAVELOG_BASE}/api/lookup"
+print_step "Wavelog lookup URL: ${USER_WAVELOG_LOOKUP}"
 
 read -rsp "  Wavelog API key (input hidden): " USER_WAVELOG_KEY
 echo ""
@@ -163,6 +203,7 @@ printf  "${CYAN}  │${NC}  Callsign:        %-36s${CYAN}│${NC}\n" "$USER_DXCA
 printf  "${CYAN}  │${NC}  Base Call:        %-36s${CYAN}│${NC}\n" "$USER_CALLSIGN"
 printf  "${CYAN}  │${NC}  Grid:            %-36s${CYAN}│${NC}\n" "$USER_GRID"
 printf  "${CYAN}  │${NC}  Wavelog URL:      %-36s${CYAN}│${NC}\n" "$USER_WAVELOG_BASE"
+printf  "${CYAN}  │${NC}  Wavelog Lookup:   %-36s${CYAN}│${NC}\n" "$USER_WAVELOG_LOOKUP"
 printf  "${CYAN}  │${NC}  Wavelog Key:      %-36s${CYAN}│${NC}\n" "********"
 printf  "${CYAN}  │${NC}  DX Cluster:       %-36s${CYAN}│${NC}\n" "${USER_DXHOST}:${USER_DXPORT}"
 printf  "${CYAN}  │${NC}  API Port:         %-36s${CYAN}│${NC}\n" "$USER_WEBPORT"
@@ -183,18 +224,32 @@ fi
 print_header "Step 2: Docker & Docker Compose"
 
 if command -v docker &> /dev/null; then
-    print_step "Docker already installed: $(docker --version | head -1)"
+    print_step "Docker already installed: $(docker --version 2>/dev/null || sudo docker --version)"
 else
     print_warn "Docker not found — installing..."
     curl -fsSL https://get.docker.com | sudo sh
     sudo usermod -aG docker "$USER"
     print_step "Docker installed"
     print_warn "You were added to the 'docker' group."
-    print_warn "If docker commands fail, log out and back in, or run: newgrp docker"
 fi
 
-if docker compose version &> /dev/null; then
-    print_step "Docker Compose available: $(docker compose version --short 2>/dev/null)"
+# Ensure Docker starts on boot
+if ! sudo systemctl is-enabled docker &>/dev/null; then
+    sudo systemctl enable docker
+    print_step "Docker enabled at boot"
+else
+    print_step "Docker already enabled at boot"
+fi
+
+# Make sure Docker is running right now
+if ! sudo systemctl is-active docker &>/dev/null; then
+    sudo systemctl start docker
+    sleep 2
+    print_step "Docker service started"
+fi
+
+if docker compose version &> /dev/null || sudo docker compose version &> /dev/null; then
+    print_step "Docker Compose available"
 elif command -v docker-compose &> /dev/null; then
     print_step "Docker Compose (standalone) available"
 else
@@ -219,7 +274,7 @@ if [ -d "$DXCLUSTER_DIR" ]; then
     read -rp "  Update it? (y/N): " UPDATE_DX
     if [[ "$UPDATE_DX" =~ ^[Yy]$ ]]; then
         cd "$DXCLUSTER_DIR"
-        docker compose down 2>/dev/null || docker-compose down 2>/dev/null || true
+        run_docker_compose down || true
         git fetch origin
         git checkout "$DXCLUSTER_BRANCH"
         git pull origin "$DXCLUSTER_BRANCH"
@@ -237,46 +292,48 @@ fi
 
 cd "$DXCLUSTER_DIR"
 
-# Write docker-compose.yaml with user config
+# Write docker-compose.yaml — uses build: . for ARM/Pi compatibility
+# The prebuilt ghcr.io image is amd64 only, so we must build locally
 cat > "$DXCLUSTER_DIR/docker-compose.yaml" << COMPOSEEOF
-version: '3'
 services:
   dxcache:
-    image: ghcr.io/int2001/dxclusterapi:latest
+    build: .
     container_name: dxcache
     environment:
-      MAXCACHE: 10000                                # Max spots to cache
-      WEBPORT: ${USER_WEBPORT}                               # API listen port
-      WAVELOG_URL: ${USER_WAVELOG_URL}
-      WEBURL: /dxcache                               # URL prefix
+      MAXCACHE: 10000
+      WEBPORT: ${USER_WEBPORT}
+      WAVELOG_URL: ${USER_WAVELOG_LOOKUP}
+      WEBURL: /dxcache
       WAVELOG_KEY: ${USER_WAVELOG_KEY}
-      DXHOST: ${USER_DXHOST}                            # DX Cluster host
-      DXPORT: ${USER_DXPORT}                                # DX Cluster port
-      DXCALL: ${USER_DXCALL}                             # Cluster login call
-      POTA_INTEGRATION: ${USER_POTA_ENABLED}                    # Poll POTA spots
-      POTA_POLLING_INTERVAL: ${USER_POTA_INTERVAL}                  # POTA poll interval (sec)
+      DXHOST: ${USER_DXHOST}
+      DXPORT: ${USER_DXPORT}
+      DXCALL: ${USER_DXCALL}
+      POTA_INTEGRATION: ${USER_POTA_ENABLED}
+      POTA_POLLING_INTERVAL: ${USER_POTA_INTERVAL}
     ports:
       - ${USER_WEBPORT}:${USER_WEBPORT}
     restart: unless-stopped
 COMPOSEEOF
-print_step "docker-compose.yaml configured"
+print_step "docker-compose.yaml configured (local build for ARM)"
 
-# Start container
-echo "  Starting DXClusterAPI container..."
-if docker compose up -d 2>/dev/null; then
-    print_step "DXClusterAPI started (docker compose)"
-elif docker-compose up -d 2>/dev/null; then
-    print_step "DXClusterAPI started (docker-compose)"
+# Build and start container — use sudo since user may not be in docker group yet
+echo "  Building and starting DXClusterAPI container..."
+echo "  (first build may take a few minutes on Raspberry Pi)"
+echo ""
+if sudo docker compose up -d --build; then
+    print_step "DXClusterAPI built and started"
+elif sudo docker-compose up -d --build; then
+    print_step "DXClusterAPI built and started (standalone compose)"
 else
-    print_error "Failed to start DXClusterAPI"
-    echo "    You may need to log out/in or run: newgrp docker"
-    echo "    Then: cd $DXCLUSTER_DIR && docker compose up -d"
+    print_error "Failed to build/start DXClusterAPI"
+    echo "    Try manually: cd $DXCLUSTER_DIR && sudo docker compose up -d --build"
 fi
 
 # Wait for API
-echo "  Waiting for API to respond..."
+echo ""
+echo "  Waiting for API to respond (this may take 30-60 seconds)..."
 API_READY=false
-for i in $(seq 1 20); do
+for i in $(seq 1 30); do
     if curl -s --max-time 2 "$LOCAL_API_URL" > /dev/null 2>&1; then
         print_step "DXClusterAPI responding at $LOCAL_API_URL"
         API_READY=true
@@ -288,7 +345,7 @@ done
 echo ""
 if [ "$API_READY" = false ]; then
     print_warn "API not responding yet — it may need more time to connect"
-    print_warn "Check status: docker logs dxcache --tail 20"
+    print_warn "Check status: sudo docker logs dxcache --tail 20"
 fi
 
 # ═════════════════════════════════════════════════════════════════
@@ -365,38 +422,54 @@ if [ -f "$WA_MANAGER" ]; then
     print_step "weather-alerts: set NWS User-Agent email"
 fi
 
-# ─── Write plugin configs into LEDMatrix config if needed ──────
+# ─── Write plugin configs into LEDMatrix config ──────
 CONFIG_FILE="$LEDMATRIX_DIR/config/config.json"
 if [ -f "$CONFIG_FILE" ]; then
-    # Check if hamradio-spots config has api_url set
     if python3 -c "
 import json
 with open('$CONFIG_FILE') as f:
     c = json.load(f)
+
+# hamradio-spots
 hs = c.get('hamradio-spots', {})
 if not hs.get('api_url'):
     hs['api_url'] = '$LOCAL_API_URL'
     hs['my_grid'] = '$USER_GRID'
     hs['my_callsign'] = '$USER_CALLSIGN'
-    hs.setdefault('enabled', True)
-    c['hamradio-spots'] = hs
+hs['enabled'] = True
+c['hamradio-spots'] = hs
+
+# weather-alerts
 wa = c.get('weather-alerts', {})
 if not wa.get('latitude'):
     wa['latitude'] = float('$USER_LAT')
     wa['longitude'] = float('$USER_LON')
-    wa.setdefault('enabled', True)
-    c['weather-alerts'] = wa
+wa['enabled'] = True
+c['weather-alerts'] = wa
+
+# wavelog-qsos
 wq = c.get('wavelog-qsos', {})
 if not wq.get('api_key'):
     wq['wavelog_url'] = '$USER_WAVELOG_BASE'
     wq['api_key'] = '$USER_WAVELOG_KEY'
-    wq.setdefault('enabled', True)
-    c['wavelog-qsos'] = wq
+wq['enabled'] = True
+c['wavelog-qsos'] = wq
+
+# contest-countdown
+cc = c.get('contest-countdown', {})
+cc['enabled'] = True
+c['contest-countdown'] = cc
+
+# news
+ns = c.get('news', {})
+ns['enabled'] = True
+c['news'] = ns
+
 with open('$CONFIG_FILE', 'w') as f:
     json.dump(c, f, indent=2)
 print('OK')
 " 2>/dev/null; then
-        print_step "Plugin configs written to config.json"
+        print_step "All plugins enabled in config.json"
     else
         print_warn "Could not auto-configure config.json — configure via web UI"
     fi
@@ -405,9 +478,41 @@ else
 fi
 
 # ═════════════════════════════════════════════════════════════════
-# STEP 7: VERIFY & RESTART
+# STEP 7: SYSTEMD — ENSURE LEDMATRIX WAITS FOR DOCKER
 # ═════════════════════════════════════════════════════════════════
-print_header "Step 7: Verify & Restart"
+print_header "Step 7: Boot Order Configuration"
+
+OVERRIDE_DIR="/etc/systemd/system/ledmatrix.service.d"
+OVERRIDE_FILE="$OVERRIDE_DIR/override.conf"
+
+if [ ! -f "$OVERRIDE_FILE" ]; then
+    sudo mkdir -p "$OVERRIDE_DIR"
+    sudo bash -c "cat > $OVERRIDE_FILE" << 'OVERRIDEEOF'
+[Unit]
+After=docker.service
+Requires=docker.service
+OVERRIDEEOF
+    sudo systemctl daemon-reload
+    print_step "LEDMatrix will now wait for Docker before starting on boot"
+else
+    if grep -q "docker.service" "$OVERRIDE_FILE" 2>/dev/null; then
+        print_step "Docker boot dependency already configured"
+    else
+        sudo bash -c "cat >> $OVERRIDE_FILE" << 'OVERRIDEEOF'
+
+[Unit]
+After=docker.service
+Requires=docker.service
+OVERRIDEEOF
+        sudo systemctl daemon-reload
+        print_step "Added Docker dependency to existing override"
+    fi
+fi
+
+# ═════════════════════════════════════════════════════════════════
+# STEP 8: VERIFY & RESTART
+# ═════════════════════════════════════════════════════════════════
+print_header "Step 8: Verify & Restart"
 
 echo "  Syntax checking all plugins..."
 ALL_OK=true
@@ -434,13 +539,13 @@ sudo systemctl restart ledmatrix
 print_step "LEDMatrix restarted"
 
 # Quick log check
-sleep 4
+sleep 5
 echo ""
 echo "  Checking startup logs..."
 echo ""
-sudo journalctl -u ledmatrix --since "5 seconds ago" --no-pager 2>/dev/null \
-    | grep -iE "loaded|error|fail|hamradio|weather|contest|wavelog|news" \
-    | head -15
+sudo journalctl -u ledmatrix --since "10 seconds ago" --no-pager 2>/dev/null \
+    | grep -iE "loaded|error|fail|hamradio|weather|contest|wavelog|news|SEGMENT|ordered" \
+    | head -20
 
 # ═════════════════════════════════════════════════════════════════
 # DONE
@@ -457,10 +562,11 @@ echo "  │  Useful Commands                                    │"
 echo "  ├─────────────────────────────────────────────────────┤"
 echo "  │  Check spots:     curl -s $LOCAL_API_URL | python3 -m json.tool | head"
 echo "  │  API stats:       curl -s http://localhost:${USER_WEBPORT}/dxcache/stats"
+echo "  │  Spot count:      curl -s $LOCAL_API_URL | python3 -c \"import sys,json; print(len(json.load(sys.stdin)))\" "
 echo "  │  Plugin logs:     sudo journalctl -u ledmatrix -f"
-echo "  │  DXCluster logs:  cd $DXCLUSTER_DIR && docker compose logs -f"
+echo "  │  DXCluster logs:  cd $DXCLUSTER_DIR && sudo docker compose logs -f"
 echo "  │  Restart display: sudo systemctl restart ledmatrix"
-echo "  │  Restart DXCache: cd $DXCLUSTER_DIR && docker compose restart"
+echo "  │  Restart DXCache: cd $DXCLUSTER_DIR && sudo docker compose restart"
 echo "  └─────────────────────────────────────────────────────┘"
 echo ""
 echo "  ┌─────────────────────────────────────────────────────┐"
@@ -472,10 +578,26 @@ echo "  │  Clear test:       python3 ~/LEDMatrix/plugin-repos/weather-alerts/t
 echo "  └─────────────────────────────────────────────────────┘"
 echo ""
 echo "  ┌─────────────────────────────────────────────────────┐"
+echo "  │  Contest Calendar                                   │"
+echo "  ├─────────────────────────────────────────────────────┤"
+echo "  │  View calendar:    python3 ~/LEDMatrix/plugin-repos/contest-countdown/contest_calendar.py"
+echo "  │  Future year:      python3 ~/LEDMatrix/plugin-repos/contest-countdown/contest_calendar.py 2030"
+echo "  └─────────────────────────────────────────────────────┘"
+echo ""
+echo "  ┌─────────────────────────────────────────────────────┐"
 echo "  │  Update Plugins                                     │"
 echo "  ├─────────────────────────────────────────────────────┤"
-echo "  │  cd $(basename $SCRIPT_DIR) && git pull && bash install.sh"
+echo "  │  cd ~/wa0o-ledmatrix-plugins && git pull && bash install.sh"
 echo "  └─────────────────────────────────────────────────────┘"
 echo ""
 echo -e "  ${CYAN}73 de ${USER_CALLSIGN}!${NC}"
 echo ""
+
+# ─── Reboot to apply Docker group, systemd override, etc. ─────
+echo ""
+read -rp "  Reboot now to apply all changes? (Y/n): " REBOOT
+if [[ ! "$REBOOT" =~ ^[Nn]$ ]]; then
+    echo -e "  ${CYAN}Rebooting in 5 seconds...${NC}"
+    sleep 5
+    sudo reboot
+fi
