@@ -283,7 +283,7 @@ class WeatherAlertsPlugin(BasePlugin):
         try:
             url = f"https://api.weather.gov/alerts/active?point={self.latitude},{self.longitude}"
             headers = {
-                "User-Agent": "(LEDMatrix Weather Alerts, your-email@example.com)",
+                "User-Agent": "(LEDMatrix Weather Alerts, jwussler@gmail.com)",
                 "Accept": "application/geo+json",
             }
             resp = requests.get(url, headers=headers, timeout=15)
@@ -521,12 +521,34 @@ class WeatherAlertsPlugin(BasePlugin):
         if self._should_start_t2_cycle():
             self._start_t2_cycle()
 
-        # T1 permanent takeover - no Vegas cards
+        # T1: flood Vegas with warning cards (animated chevron frames)
         if self.has_tier1:
-            return None
-        # T2 active cycle - no Vegas cards (display taken over temporarily)
+            images = []
+            t1_alerts = [a for a in self.alerts if a["_tier"] == 1]
+            for alert in t1_alerts:
+                weight = alert.get("_weight", 2)
+                num_cards = max(6, weight * 4)  # 8-24 cards per alert
+                for frame in range(num_cards):
+                    img = Image.new("RGB", (self.W, self.H), (0, 0, 0))
+                    draw = ImageDraw.Draw(img)
+                    # Animate chevrons across frames
+                    fake_time = time.time() + frame * 0.15
+                    self._draw_chevron_stripes(draw, fake_time, self.CHEVRON_COLORS[1])
+                    # Black center band with warning text
+                    draw.rectangle([0, 10, self.W, 22], fill=(0, 0, 0))
+                    ev = self._short(alert["event"])
+                    rem = self._remaining(alert["expires"])
+                    areas = alert.get("areas", "")[:24]
+                    text = f"*** {ev} ***  {areas}  {rem}"
+                    self._text(draw, self.MARGIN, 12, text[:self.CHARS_PER_LINE], (255, 255, 255))
+                    self._stamp_test(draw)
+                    images.append(img)
+            logger.info(f"Vegas T1: {len(images)} warning cards for {len(t1_alerts)} alerts")
+            return images if images else None
+
+        # T2 active cycle - show watch cards in rotation
         if self._t2_cycle_active:
-            return None
+            pass  # Fall through to normal card generation
 
         if not self.alerts:
             if self.config.get("show_when_clear", False):
@@ -714,6 +736,10 @@ class WeatherAlertsPlugin(BasePlugin):
             os.remove(PRIORITY_FILE)
         except FileNotFoundError:
             pass
+
+    def has_live_priority(self) -> bool:
+        """T1 and active T2 take over the display."""
+        return self.has_live_content()
 
     def has_live_content(self) -> bool:
         """T1 always takes over. T2 takes over only during active cycle."""
