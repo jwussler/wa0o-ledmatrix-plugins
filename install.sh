@@ -430,7 +430,14 @@ import json
 with open('$CONFIG_FILE') as f:
     c = json.load(f)
 
-# hamradio-spots
+# ── Enable Vegas mode ──
+vs = c.get('display', {}).get('vegas_scroll', {})
+vs['enabled'] = True
+vs['plugin_order'] = ['hamradio-spots', 'weather-alerts', 'contest-countdown', 'wavelog-qsos']
+vs['excluded_plugins'] = []
+c.setdefault('display', {})['vegas_scroll'] = vs
+
+# ── Ham radio plugins (enabled) ──
 hs = c.get('hamradio-spots', {})
 if not hs.get('api_url'):
     hs['api_url'] = '$LOCAL_API_URL'
@@ -439,7 +446,6 @@ if not hs.get('api_url'):
 hs['enabled'] = True
 c['hamradio-spots'] = hs
 
-# weather-alerts
 wa = c.get('weather-alerts', {})
 if not wa.get('latitude'):
     wa['latitude'] = float('$USER_LAT')
@@ -447,7 +453,6 @@ if not wa.get('latitude'):
 wa['enabled'] = True
 c['weather-alerts'] = wa
 
-# wavelog-qsos
 wq = c.get('wavelog-qsos', {})
 if not wq.get('api_key'):
     wq['wavelog_url'] = '$USER_WAVELOG_BASE'
@@ -455,21 +460,20 @@ if not wq.get('api_key'):
 wq['enabled'] = True
 c['wavelog-qsos'] = wq
 
-# contest-countdown
 cc = c.get('contest-countdown', {})
 cc['enabled'] = True
 c['contest-countdown'] = cc
 
-# news
+# ── News (installed but disabled by default) ──
 ns = c.get('news', {})
-ns['enabled'] = True
+ns['enabled'] = False
 c['news'] = ns
 
 with open('$CONFIG_FILE', 'w') as f:
     json.dump(c, f, indent=2)
 print('OK')
 " 2>/dev/null; then
-        print_step "All plugins enabled in config.json"
+        print_step "Vegas mode enabled, ham radio plugins configured"
     else
         print_warn "Could not auto-configure config.json — configure via web UI"
     fi

@@ -7,7 +7,7 @@
       "type": "string",
       "title": "Your Grid Square",
       "description": "Maidenhead grid (e.g., EM48)",
-      "default": "EM48"
+      "default": "FN31"
     },
     "my_callsign": {
       "type": "string",

@@ -551,7 +551,7 @@ class HamRadioSpotsPlugin(BasePlugin):
     # WORKABILITY SCORING
     # =========================================================================
     
-    # Band openness windows from EM48 (Central Missouri) by UTC hour
+    # Band openness windows (example for central US) by UTC hour
     # Score 0-10 for each hour: 0=dead, 5=marginal, 10=peak
     BAND_TIME_MATRIX = {
         "160m": [9,9,9,9,8,7,5,2,0,0,0,0,0,0,0,0,0,0,0,0,1,3,5,8],
