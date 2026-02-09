@@ -39,7 +39,7 @@ def make_alert(event, severity, urgency, headline, description, instruction, hou
         "onset": (now - timedelta(hours=1)).isoformat(),
         "expires": (now + timedelta(hours=hours_left)).isoformat(),
         "sender": "NWS St. Louis MO",
-        "areas": "St. Charles County, MO",
+        "areas": "Your County",
     }
 
 
@@ -48,9 +48,9 @@ SCENARIOS = {
     "tornado": [
         make_alert(
             "Tornado Warning", "Extreme", "Immediate",
-            "Tornado Warning issued for St. Charles County until 8:00 PM CST",
+            "Tornado Warning issued for Your County until 8:00 PM CST",
             "At 4:15 PM CST a severe thunderstorm capable of producing a tornado "
-            "was located near St. Charles moving northeast at 45 mph. Flying debris "
+            "was located near Your Area moving northeast at 45 mph. Flying debris "
             "will be dangerous to those caught without shelter.",
             "TAKE SHELTER NOW! Move to a basement or interior room on the lowest "
             "floor of a sturdy building. Avoid windows.",
@@ -60,7 +60,7 @@ SCENARIOS = {
     "severe": [
         make_alert(
             "Severe Thunderstorm Warning", "Severe", "Immediate",
-            "Severe Thunderstorm Warning for St. Charles County until 9:00 PM CST",
+            "Severe Thunderstorm Warning for Your County until 9:00 PM CST",
             "At 5:30 PM a severe thunderstorm near Weldon Spring moving east at "
             "35 mph. 70 mph wind gusts and ping pong ball size hail.",
             "Move to an interior room on the lowest floor of a building.",
@@ -70,7 +70,7 @@ SCENARIOS = {
     "flood": [
         make_alert(
             "Flash Flood Warning", "Severe", "Immediate",
-            "Flash Flood Warning for St. Charles County until 11:00 PM CST",
+            "Flash Flood Warning for Your County until 11:00 PM CST",
             "Flash flooding occurring along Dardenne Creek. Up to 4 inches of "
             "rain has fallen with additional heavy rain expected.",
             "Turn around dont drown. Move to higher ground now.",
@@ -115,7 +115,7 @@ SCENARIOS = {
     "multi": [
         make_alert(
             "Tornado Warning", "Extreme", "Immediate",
-            "Tornado Warning for St. Charles County",
+            "Tornado Warning for Your County",
             "Tornado producing storm near OFallon moving northeast at 40 mph.",
             "TAKE SHELTER NOW!",
             hours_left=1,
@@ -140,7 +140,7 @@ SCENARIOS = {
     "dual": [
         make_alert(
             "Tornado Warning", "Extreme", "Immediate",
-            "Tornado Warning for St. Charles County until 7:00 PM CST",
+            "Tornado Warning for Your County until 7:00 PM CST",
             "At 5:15 PM CST a confirmed tornado was located near OFallon "
             "moving northeast at 40 mph. This is a particularly dangerous "
             "situation. Flying debris will be dangerous to those caught "
@@ -151,7 +151,7 @@ SCENARIOS = {
         ),
         make_alert(
             "Severe Thunderstorm Warning", "Severe", "Immediate",
-            "Severe Thunderstorm Warning for St. Charles County until 8:30 PM",
+            "Severe Thunderstorm Warning for Your County until 8:30 PM",
             "A severe thunderstorm was located near Wentzville moving east "
             "at 35 mph. 70 mph wind gusts and golf ball size hail expected.",
             "Move to an interior room on the lowest floor of a building.",

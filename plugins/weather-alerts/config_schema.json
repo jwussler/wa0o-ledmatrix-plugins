@@ -13,13 +13,13 @@
       "type": "number",
       "title": "Latitude",
       "description": "Your latitude for NWS alerts",
-      "default": 38.7881
+      "default": 40.7128
     },
     "longitude": {
       "type": "number",
       "title": "Longitude",
       "description": "Your longitude for NWS alerts",
-      "default": -90.4974
+      "default": -74.0060
     },
     "check_interval": {
       "type": "integer",

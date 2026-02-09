@@ -117,8 +117,8 @@ class WeatherAlertsPlugin(BasePlugin):
     def __init__(self, plugin_id, config, display_manager, cache_manager, plugin_manager):
         super().__init__(plugin_id, config, display_manager, cache_manager, plugin_manager)
 
-        self.latitude = self.config.get("latitude", 38.7881)
-        self.longitude = self.config.get("longitude", -90.4974)
+        self.latitude = self.config.get("latitude", 40.7128)
+        self.longitude = self.config.get("longitude", -74.0060)
         self.check_interval = self.config.get("check_interval", 120)
 
         self.alerts = []
@@ -283,7 +283,7 @@ class WeatherAlertsPlugin(BasePlugin):
         try:
             url = f"https://api.weather.gov/alerts/active?point={self.latitude},{self.longitude}"
             headers = {
-                "User-Agent": "(LEDMatrix Weather Alerts, jwussler@gmail.com)",
+                "User-Agent": "(LEDMatrix Weather Alerts, your-email@example.com)",
                 "Accept": "application/geo+json",
             }
             resp = requests.get(url, headers=headers, timeout=15)
@@ -495,7 +495,7 @@ class WeatherAlertsPlugin(BasePlugin):
         self._draw_border(draw, (0, 80, 0), 1)
         self._text(draw, self.MARGIN, self.ROW1, "NWS WEATHER ALERTS", (0, 150, 0))
         self._text(draw, self.MARGIN, self.ROW2, "No active alerts", (0, 100, 0))
-        self._text(draw, self.MARGIN, self.ROW3, "Saint Charles, MO", (80, 80, 80))
+        self._text(draw, self.MARGIN, self.ROW3, "Your Area", (80, 80, 80))
 
     # =========================================================================
     # VEGAS MODE

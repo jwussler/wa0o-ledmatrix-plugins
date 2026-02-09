@@ -161,7 +161,7 @@ def load_fonts(plugin_file: str = None) -> Tuple[ImageFont.FreeTypeFont, ImageFo
 
     # Fallback absolute paths
     font_paths.extend([
-        Path("/home/jwussler/LEDMatrix/assets/fonts/4x6-font.ttf"),
+        Path(os.path.expanduser("~/LEDMatrix/assets/fonts/4x6-font.ttf")),
         Path("assets/fonts/4x6-font.ttf"),
     ])
 
