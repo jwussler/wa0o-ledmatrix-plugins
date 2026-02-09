@@ -100,7 +100,7 @@ print_header "Step 1: Your Station Configuration"
 echo -e "  ${BOLD}DX Cluster Connection${NC}"
 echo ""
 
-read -rp "  Your callsign for DX cluster login (e.g. WA0O-3): " USER_DXCALL
+read -rp "  Your callsign for DX cluster login (e.g. N0CALL-3): " USER_DXCALL
 while [ -z "$USER_DXCALL" ]; do
     echo -e "  ${RED}Callsign is required.${NC}"
     read -rp "  Your callsign: " USER_DXCALL
@@ -117,8 +117,8 @@ fi
 # Extract base callsign (strip SSID like -3)
 USER_CALLSIGN="${USER_DXCALL%%-*}"
 
-read -rp "  Your Maidenhead grid square [EM48]: " USER_GRID
-USER_GRID="${USER_GRID:-EM48}"
+read -rp "  Your Maidenhead grid square [FN31]: " USER_GRID
+USER_GRID="${USER_GRID:-FN31}"
 
 echo ""
 echo -e "  ${BOLD}Wavelog Integration${NC}"
@@ -177,11 +177,11 @@ echo -e "  ${BOLD}Weather Alerts Location${NC}"
 echo "  NWS alerts need your coordinates. Find yours at: https://www.latlong.net/"
 echo ""
 
-read -rp "  Your latitude [38.7881]: " USER_LAT
-USER_LAT="${USER_LAT:-38.7881}"
+read -rp "  Your latitude [40.7128]: " USER_LAT
+USER_LAT="${USER_LAT:-40.7128}"
 
-read -rp "  Your longitude [-90.4974]: " USER_LON
-USER_LON="${USER_LON:--90.4974}"
+read -rp "  Your longitude [-74.0060]: " USER_LON
+USER_LON="${USER_LON:--74.0060}"
 
 echo ""
 echo -e "  ${BOLD}NWS User-Agent${NC}"
@@ -430,22 +430,35 @@ import json
 with open('$CONFIG_FILE') as f:
     c = json.load(f)
 
-# ── Enable Vegas mode ──
+# ── Enable Vegas mode with ham-only rotation ──
 vs = c.get('display', {}).get('vegas_scroll', {})
 vs['enabled'] = True
 vs['plugin_order'] = ['hamradio-spots', 'weather-alerts', 'contest-countdown', 'wavelog-qsos']
 vs['excluded_plugins'] = []
 c.setdefault('display', {})['vegas_scroll'] = vs
 
-# ── Ham radio plugins (enabled) ──
+# ── hamradio-spots: all views except contest, all modes, all display options ──
 hs = c.get('hamradio-spots', {})
 if not hs.get('api_url'):
     hs['api_url'] = '$LOCAL_API_URL'
     hs['my_grid'] = '$USER_GRID'
     hs['my_callsign'] = '$USER_CALLSIGN'
 hs['enabled'] = True
+hs['vegas_views'] = [
+    'dashboard', 'spots', 'conditions', 'hotspots', 'map', 'grayline',
+    'clock', 'bestband', 'pota', 'spacewx', 'stats', 'continents',
+    'bandopen', 'rate', 'distance', 'longpath', 'beacon', 'muf'
+]
+hs['priority_enabled'] = True
+hs['show_voice'] = True
+hs['show_cw'] = True
+hs['show_digital'] = True
+hs['show_flags'] = True
+hs['show_frequency'] = True
+hs['show_age'] = True
 c['hamradio-spots'] = hs
 
+# ── weather-alerts ──
 wa = c.get('weather-alerts', {})
 if not wa.get('latitude'):
     wa['latitude'] = float('$USER_LAT')
@@ -453,6 +466,7 @@ if not wa.get('latitude'):
 wa['enabled'] = True
 c['weather-alerts'] = wa
 
+# ── wavelog-qsos ──
 wq = c.get('wavelog-qsos', {})
 if not wq.get('api_key'):
     wq['wavelog_url'] = '$USER_WAVELOG_BASE'
@@ -460,14 +474,20 @@ if not wq.get('api_key'):
 wq['enabled'] = True
 c['wavelog-qsos'] = wq
 
+# ── contest-countdown (enabled) ──
 cc = c.get('contest-countdown', {})
 cc['enabled'] = True
 c['contest-countdown'] = cc
 
-# ── News (installed but disabled by default) ──
+# ── news (installed but disabled by default) ──
 ns = c.get('news', {})
 ns['enabled'] = False
 c['news'] = ns
+
+# ── web-ui-info (disabled) ──
+wu = c.get('web-ui-info', {})
+wu['enabled'] = False
+c['web-ui-info'] = wu
 
 with open('$CONFIG_FILE', 'w') as f:
     json.dump(c, f, indent=2)
